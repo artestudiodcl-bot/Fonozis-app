@@ -1,11 +1,17 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from audio_recorder_streamlit import audio_recorder
 import requests
 
 # CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(page_title="Fonozis - Band Hub", page_icon="🎸", layout="centered")
+
+# Intentar importar el grabador de audio nativo de forma segura
+try:
+    from audio_recorder_streamlit import audio_recorder
+    AUDIO_RECORDER_AVAILABLE = True
+except ImportError:
+    AUDIO_RECORDER_AVAILABLE = False
 
 # Conexión básica a Supabase vía API Rest
 SUPABASE_URL = st.secrets["supabase"]["url"]
@@ -52,10 +58,13 @@ with tab_audios:
         if archivo_subido:
             audio_bytes = archivo_subido.read()
     else:
-        st.write("Haz clic en el micrófono para empezar a grabar (se pondrá rojo y registrará en WAV):")
-        audio_bytes = audio_recorder(text="", recording_color="#ff4b4b", neutral_color="#ffffff")
-        if audio_bytes:
-            st.audio(audio_bytes, format="audio/wav")
+        if AUDIO_RECORDER_AVAILABLE:
+            st.write("Haz clic en el micrófono para empezar a grabar (se pondrá rojo y registrará en WAV):")
+            audio_bytes = audio_recorder(text="", recording_color="#ff4b4b", neutral_color="#ffffff")
+            if audio_bytes:
+                st.audio(audio_bytes, format="audio/wav")
+        else:
+            st.error("El componente de grabación no está listo. Sube un archivo mientras tanto.")
         
     nombre_audio = st.text_input("Nombre de la pista / Idea:")
     categoria = st.selectbox("Categoría", ["Riff suelto", "Ensayo completo", "Maqueta", "Mezcla"])
@@ -64,14 +73,19 @@ with tab_audios:
         if audio_bytes and nombre_audio:
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
             
-            # Forzar creación automática si el bucket no existe
+            # Forzar creación o chequeo del bucket público
             bucket_setup_url = f"{SUPABASE_URL}/storage/v1/bucket"
             bucket_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "application/json"}
             requests.post(bucket_setup_url, headers=bucket_headers, json={"id": "banco-audios", "name": "banco-audios", "public": True})
             
-            # Subida física
+            # Ruta de subida estándar
             upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
-            file_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "audio/wav"}
+            file_headers = {
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_KEY,
+                "Content-Type": "audio/wav"
+            }
+            
             res_upload = requests.post(upload_url, headers=file_headers, data=audio_bytes)
             
             if res_upload.status_code in [200, 201]:
@@ -84,10 +98,10 @@ with tab_audios:
                     "archivo_url": public_url
                 }
                 requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=HEADERS, json=payload)
-                st.success("¡Audio inmortalizado! Refrescando...")
-                st.experimental_rerun()
+                st.success("¡Audio inmortalizado en la base de datos!")
+                st.rerun()
             else:
-                st.error(f"Error al subir el archivo al almacenamiento. (Código: {res_upload.status_code})")
+                st.error(f"Error al subir el archivo al almacenamiento (Código: {res_upload.status_code})")
 
     st.write("---")
     st.subheader("Audios de la Banda")
@@ -127,15 +141,13 @@ with tab_mensajes:
             st.markdown(html_burbuja, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Formulario controlado para envío y refresco instantáneo del chat
-    with st.form(key="chat_form", clear_on_submit=True):
-        texto = st.text_area("Escribe un mensaje para la banda...")
-        submit_button = st.form_submit_button(label="Enviar Mensaje 🚀")
-        
-        if submit_button and texto.strip():
-            payload = {"usuario": usuario_actual, "texto": texto.strip(), "fecha": datetime.now().strftime("%H:%M")}
-            requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=HEADERS, json=payload)
-            st.experimental_rerun()
+    # Manejo directo del chat sin funciones intermedias rotas
+    texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
+    if st.button("Enviar Mensaje 🚀"):
+        if texto_chat.strip():
+            payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
+            res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=HEADERS, json=payload)
+            st.rerun()
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
@@ -152,7 +164,7 @@ with tab_fechas:
             payload = {"fecha_evento": fecha_evento.strftime("%Y-%m-%d"), "tipo": tipo_evento, "detalles": descripcion_evento, "creado_por": usuario_actual}
             requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS, json=payload)
             st.success("¡Fecha anotada en la nube!")
-            st.experimental_rerun()
+            st.rerun()
             
     st.write("---")
     st.subheader("Próximos Compromisos")
