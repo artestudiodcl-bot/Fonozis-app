@@ -138,15 +138,13 @@ with tab_audios:
                 st.write(f"Subido/Grabado el: {aud['fecha']}")
                 st.audio(aud['archivo'], format='audio/wav')
 
-# --- APARTADO: MENSAJES (ESTILO CHAT TELEFÓNICO) ---
+# --- APARTADO: MENSAJES (ESTILO CHAT TELEFÓNICO CON RESET) ---
 with tab_mensajes:
     st.header("Muro de Control")
     
     # Caja contenedora del historial del chat
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    
     for msg in st.session_state.mensajes:
-        # Si el mensaje lo escribió el usuario activo actual, va a la derecha (Azul)
         if msg['usuario'] == usuario_actual:
             clase_lado = "derecha"
             nombre_mostrar = "Tú"
@@ -154,7 +152,6 @@ with tab_mensajes:
             clase_lado = "izquierda"
             nombre_mostrar = msg['usuario']
             
-        # Construcción de la burbuja en HTML
         html_burbuja = f"""
         <div class="msg-row {clase_lado}">
             <div class="burbuja">
@@ -164,20 +161,29 @@ with tab_mensajes:
         </div>
         """
         st.markdown(html_burbuja, unsafe_allow_html=True)
-        
     st.markdown('</div>', unsafe_allow_html=True)
     st.write("---")
     
-    # Campo para escribir abajo (como en el cel)
-    nuevo_msg = st.text_area("Escribe un mensaje para la banda...", placeholder="Introduce tu idea o propuesta aquí...")
-    if st.button("Enviar Mensaje 🚀", key="btn_msg"):
-        if nuevo_msg.strip():
+    # Función intermedia que procesa y limpia la caja
+    def enviar_y_limpiar():
+        texto_ingresado = st.session_state.caja_chat.strip()
+        if texto_ingresado:
             st.session_state.mensajes.append({
                 "usuario": usuario_actual,
-                "texto": nuevo_msg,
+                "texto": texto_ingresado,
                 "fecha": datetime.now().strftime("%H:%M")
             })
-            st.rerun()
+        st.session_state.caja_chat = "" # Borra el contenido interno
+
+    # Campo de texto enlazado a la memoria intermedia (key="caja_chat")
+    st.text_area(
+        "Escribe un mensaje para la banda...", 
+        placeholder="Introduce tu idea o propuesta aquí...",
+        key="caja_chat"
+    )
+    
+    # El botón ahora dispara la función de limpieza al hacer clic
+    st.button("Enviar Mensaje 🚀", on_click=enviar_y_limpiar)
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
