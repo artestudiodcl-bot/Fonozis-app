@@ -46,12 +46,12 @@ st.markdown("""
         box-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .derecha .burbuja {
-        background-color: #007AFF; /* Azul iMessage/iOS */
+        background-color: #007AFF;
         color: white;
         border-bottom-right-radius: 4px;
     }
     .izquierda .burbuja {
-        background-color: #26262b; /* Gris oscuro para los demás */
+        background-color: #26262b;
         color: #e4e6eb;
         border-bottom-left-radius: 4px;
     }
@@ -102,11 +102,14 @@ with tab_audios:
         if archivo_subido:
             audio_bytes = archivo_subido.read()
     else:
-        st.write("Presiona el botón para grabar:")
+        st.write("Presiona para grabar. Recuerda aceptar los permisos de micrófono si el navegador los pide:")
+        
+        # Grabador optimizado para compatibilidad móvil
         grabacion = mic_recorder(
             start_prompt="🔴 Iniciar Grabación",
             stop_prompt="⏹️ Detener y Procesar",
             just_once=False,
+            use_container_width=True,
             key='grabador_banda'
         )
         if grabacion:
@@ -136,13 +139,13 @@ with tab_audios:
         for aud in reversed(st.session_state.audios):
             with st.expander(f"🎵 {aud['nombre']} ({aud['categoria']}) - por {aud['usuario']}"):
                 st.write(f"Subido/Grabado el: {aud['fecha']}")
-                st.audio(aud['archivo'], format='audio/wav')
+                # Autodetecta el contenedor nativo
+                st.audio(aud['archivo'])
 
-# --- APARTADO: MENSAJES (ESTILO CHAT TELEFÓNICO CON RESET) ---
+# --- APARTADO: MENSAJES ---
 with tab_mensajes:
     st.header("Muro de Control")
     
-    # Caja contenedora del historial del chat
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     for msg in st.session_state.mensajes:
         if msg['usuario'] == usuario_actual:
@@ -164,7 +167,6 @@ with tab_mensajes:
     st.markdown('</div>', unsafe_allow_html=True)
     st.write("---")
     
-    # Función intermedia que procesa y limpia la caja
     def enviar_y_limpiar():
         texto_ingresado = st.session_state.caja_chat.strip()
         if texto_ingresado:
@@ -173,16 +175,13 @@ with tab_mensajes:
                 "texto": texto_ingresado,
                 "fecha": datetime.now().strftime("%H:%M")
             })
-        st.session_state.caja_chat = "" # Borra el contenido interno
+        st.session_state.caja_chat = ""
 
-    # Campo de texto enlazado a la memoria intermedia (key="caja_chat")
     st.text_area(
         "Escribe un mensaje para la banda...", 
         placeholder="Introduce tu idea o propuesta aquí...",
         key="caja_chat"
     )
-    
-    # El botón ahora dispara la función de limpieza al hacer clic
     st.button("Enviar Mensaje 🚀", on_click=enviar_y_limpiar)
 
 # --- APARTADO: FECHAS ---
