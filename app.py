@@ -68,7 +68,6 @@ with tab_audios:
         if audio_bytes and nombre_audio:
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
             
-            # Encabezados explícitos para subir al Storage público
             storage_headers = {
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "apikey": SUPABASE_KEY,
@@ -81,14 +80,12 @@ with tab_audios:
             if res_upload.status_code in [200, 201]:
                 public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
                 
-                # Encabezados de Base de Datos corregidos
                 db_headers = {
                     "Authorization": f"Bearer {SUPABASE_KEY}",
                     "apikey": SUPABASE_KEY,
                     "Content-Type": "application/json"
                 }
                 
-                # CORRECCIÓN AQUÍ: Cambiado 'categorya' a 'categoria' para que coincida perfectamente
                 payload = {
                     "nombre": nombre_audio, 
                     "categoria": categoria, 
@@ -143,7 +140,7 @@ with tab_mensajes:
             st.markdown(html_burbuja, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-        texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
+    texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
     if st.button("Enviar Mensaje 🚀"):
         if texto_chat.strip():
             write_headers = {
@@ -153,19 +150,17 @@ with tab_mensajes:
             }
             payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
             
-            # Capturamos la respuesta del servidor para ver qué pasa
             try:
                 res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
                 if res.status_code in [200, 201]:
                     st.success("¡Mensaje enviado!")
                     st.rerun()
                 else:
-                    # Si Supabase rechaza el mensaje, nos dirá por qué aquí:
                     st.error(f"Supabase rechazó el mensaje. Código: {res.status_code}")
                     st.code(res.text)
             except Exception as e:
-                # Si ni siquiera se puede conectar a la URL:
                 st.error(f"Error de conexión: {e}")
+
 # --- APARTADO: FECHAS ---
 with tab_fechas:
     st.header("Agenda del Rock")
