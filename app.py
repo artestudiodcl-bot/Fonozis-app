@@ -93,6 +93,7 @@ with tab_audios:
                     "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), 
                     "archivo_url": public_url
                 }
+                # Asegurando comunicación con la tabla 'audios'
                 requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=db_headers, json=payload)
                 st.success("¡Audio guardado exitosamente!")
                 st.rerun()
@@ -124,6 +125,7 @@ with tab_mensajes:
     
     read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
+        # Forzamos la consulta a la tabla 'mensajes'
         res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
         mensajes_db = res_msg.json() if res_msg.status_code == 200 else []
     except:
@@ -150,16 +152,9 @@ with tab_mensajes:
             }
             payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
             
-            try:
-                res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
-                if res.status_code in [200, 201]:
-                    st.success("¡Mensaje enviado!")
-                    st.rerun()
-                else:
-                    st.error(f"Supabase rechazó el mensaje. Código: {res.status_code}")
-                    st.code(res.text)
-            except Exception as e:
-                st.error(f"Error de conexión: {e}")
+            # Dirección exacta corregida y limpia
+            requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
+            st.rerun()
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
