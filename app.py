@@ -16,19 +16,21 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
-# Estilo personalizado general
+# Estilo personalizado general (Chat de interfaz limpia)
 st.markdown("""
     <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
     h1, h2, h3 { color: #FF4B4B !important; }
-    .chat-container { display: flex; flex-direction: column; gap: 10px; padding: 10px; margin-bottom: 20px; }
-    .msg-row { display: flex; width: 100%; margin-bottom: 4px; }
+    .chat-container { display: flex; flex-direction: column; gap: 15px; padding: 10px; margin-bottom: 20px; }
+    .msg-row { display: flex; width: 100%; margin-bottom: 2px; }
     .msg-row.derecha { justify-content: flex-end; }
     .msg-row.izquierda { justify-content: flex-start; }
-    .burbuja { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-family: sans-serif; font-size: 14px; }
+    .burbuja { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-family: sans-serif; font-size: 15px; line-height: 1.4; }
     .derecha .burbuja { background-color: #007AFF; color: white; border-bottom-right-radius: 4px; }
     .izquierda .burbuja { background-color: #26262b; color: #e4e6eb; border-bottom-left-radius: 4px; }
-    .msg-meta { font-size: 11px; margin-bottom: 4px; display: block; opacity: 0.7; }
+    .msg-meta { font-size: 11px; margin-bottom: 5px; display: block; opacity: 0.7; font-weight: bold; }
+    .derecha .msg-meta { color: #d0e3ff; }
+    .izquierda .msg-meta { color: #a0a3a8; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -44,7 +46,7 @@ with tab_audios:
     st.header("Banco de Audios")
     modo_audio = st.radio("Elige cómo añadir audio:", ["Subir archivo", "Grabar en vivo"])
     audio_bytes = None
-
+    
     if modo_audio == "Subir archivo":
         archivo_subido = st.file_uploader("Sube un archivo (MP3/WAV)", type=["mp3", "wav"])
         if archivo_subido:
@@ -54,26 +56,44 @@ with tab_audios:
         audio_bytes = audio_recorder(text="", recording_color="#ff4b4b", neutral_color="#ffffff")
         if audio_bytes:
             st.audio(audio_bytes, format="audio/wav")
-
+        
     nombre_audio = st.text_input("Nombre de la pista / Idea:")
     categoria = st.selectbox("Categoría", ["Riff suelto", "Ensayo completo", "Maqueta", "Mezcla"])
-
+    
     if st.button("Guardar Audio en el Banco"):
         if audio_bytes and nombre_audio:
+            # Generar nombre limpio de archivo sin espacios
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
-            upload_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
-
-            file_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "audio/wav"}
+            
+            # Endpoint estándar de la API de Supabase para SUBIR archivos
+            upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
+            
+            file_headers = {
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_KEY,
+                "Content-Type": "audio/wav"
+            }
+            
+            # Enviar archivo físico al bucket público
             res_upload = requests.post(upload_url, headers=file_headers, data=audio_bytes)
-
+            
             if res_upload.status_code in [200, 201]:
-                upload_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
-                payload = {"nombre": nombre_audio, "categoria": categoria, "usuario": usuario_actual, "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), "archivo_url": public_url}
+                # Endpoint de Supabase Storage público para ESCUCHAR el audio
+                public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
+                
+                # Registrar metadatos en la tabla de la BD
+                payload = {
+                    "nombre": nombre_audio, 
+                    "categoria": categoria, 
+                    "usuario": usuario_actual, 
+                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), 
+                    "archivo_url": public_url
+                }
                 requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=HEADERS, json=payload)
                 st.success("¡Audio inmortalizado en la base de datos!")
                 st.rerun()
             else:
-                st.error("Error al subir el archivo al almacenamiento.")
+                st.error(f"Error al subir el archivo al almacenamiento. (Código de error: {res_upload.status_code})")
 
     st.write("---")
     st.subheader("Audios de la Banda")
@@ -82,40 +102,38 @@ with tab_audios:
         audios_db = res_audios.json() if res_audios.status_code == 200 else []
     except:
         audios_db = []
-
+    
     if not audios_db or not isinstance(audios_db, list):
         st.info("Aún no hay audios guardados.")
     else:
         for aud in audios_db:
             with st.expander(f"🎵 {aud.get('nombre', 'Audio')} ({aud.get('categoria', 'Suelto')}) - por {aud.get('usuario', 'Desconocido')}"):
                 st.write(f"Grabado el: {aud.get('fecha', '')}")
-                st.audio(aud.get('archivo_url', ''))
+                if aud.get('archivo_url'):
+                    st.audio(aud.get('archivo_url'))
 
 # --- APARTADO: MENSAJES ---
 with tab_mensajes:
     st.header("Muro de Control")
-
+    
     try:
         res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=HEADERS)
         mensajes_db = res_msg.json() if res_msg.status_code == 200 else []
     except:
         mensajes_db = []
-
+    
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     if isinstance(mensajes_db, list):
         for msg in mensajes_db:
-            clase_lado = "derecha" if msg.get('usuario') == usuario_actual else "izquierda"
-            nombre_mostrar = "Tú" if msg.get('usuario') == usuario_actual else msg.get('usuario')
-            st.markdown(f"""
-            <div class="msg-row {clase_lado}">
-                <div class="burbuja">
-                    <span class="msg-meta">{nombre_mostrar} • {msg.get('fecha', '')}</span>
-                    {msg.get('texto', '')}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            es_propio = msg.get('usuario') == usuario_actual
+            clase_lado = "derecha" if es_propio else "izquierda"
+            nombre_mostrar = "Tú" if es_propio else msg.get('usuario', 'Anónimo')
+            
+            # Burbuja HTML pura blindada contra roturas de línea o tags residuales
+            html_burbuja = f'<div class="msg-row {clase_lado}"><div class="burbuja"><span class="msg-meta">{nombre_mostrar} • {msg.get("fecha", "")}</span>{msg.get("texto", "")}</div></div>'
+            st.markdown(html_burbuja, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
+    
     def enviar_y_limpiar():
         texto = st.session_state.caja_chat.strip()
         if texto:
@@ -135,14 +153,14 @@ with tab_fechas:
         tipo_evento = st.selectbox("Tipo de evento", ["Ensayo", "Concierto", "Grabación", "Reunión"])
     with col2:
         descripcion_evento = st.text_input("Detalles")
-
+    
     if st.button("Agendar Fecha"):
         if descripcion_evento:
             payload = {"fecha_evento": fecha_evento.strftime("%Y-%m-%d"), "tipo": tipo_evento, "detalles": descripcion_evento, "creado_por": usuario_actual}
             requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS, json=payload)
             st.success("¡Fecha anotada en la nube!")
             st.rerun()
-
+            
     st.write("---")
     st.subheader("Próximos Compromisos")
     try:
@@ -150,7 +168,7 @@ with tab_fechas:
         fechas_db = res_fechas.json() if res_fechas.status_code == 200 else []
     except:
         fechas_db = []
-
+    
     if not fechas_db or not isinstance(fechas_db, list):
         st.info("No hay fechas programadas.")
     else:
