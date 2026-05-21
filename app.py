@@ -10,11 +10,65 @@ st.set_page_config(
     layout="centered"
 )
 
-# Estilo personalizado
+# Estilo personalizado general (Fondo oscuro de estudio)
 st.markdown("""
     <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
     h1, h2, h3 { color: #FF4B4B !important; }
+    
+    /* Estilos del chat tipo teléfono */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+    .msg-row {
+        display: flex;
+        width: 100%;
+        margin-bottom: 4px;
+    }
+    .msg-row.derecha {
+        justify-content: flex-end;
+    }
+    .msg-row.izquierda {
+        justify-content: flex-start;
+    }
+    .burbuja {
+        max-width: 75%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.4;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .derecha .burbuja {
+        background-color: #007AFF; /* Azul iMessage/iOS */
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    .izquierda .burbuja {
+        background-color: #26262b; /* Gris oscuro para los demás */
+        color: #e4e6eb;
+        border-bottom-left-radius: 4px;
+    }
+    .msg-meta {
+        font-size: 11px;
+        margin-bottom: 4px;
+        display: block;
+        opacity: 0.7;
+    }
+    .derecha .msg-meta {
+        text-align: right;
+        color: #a1caff;
+    }
+    .izquierda .msg-meta {
+        text-align: left;
+        color: #b0b3b8;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -23,7 +77,7 @@ if 'audios' not in st.session_state:
     st.session_state.audios = []
 if 'mensajes' not in st.session_state:
     st.session_state.mensajes = [
-        {"usuario": "Sistema", "texto": "¡Bienvenidos al Muro de Control de la banda!", "fecha": "2026-05-20"}
+        {"usuario": "Sistema", "texto": "¡Bienvenidos al Muro de Control de la banda!", "fecha": "20:26"}
     ]
 if 'fechas' not in st.session_state:
     st.session_state.fechas = []
@@ -40,18 +94,15 @@ tab_audios, tab_mensajes, tab_fechas = st.tabs(["🎵 Audios", "💬 Mensajes", 
 # --- APARTADO: AUDIOS ---
 with tab_audios:
     st.header("Banco de Audios")
-    
     modo_audio = st.radio("Elige cómo añadir audio:", ["Subir archivo existente", "Grabar en vivo desde el micro"])
-    
     audio_bytes = None
     
     if modo_audio == "Subir archivo existente":
         archivo_subido = st.file_uploader("Sube un archivo (MP3/WAV)", type=["mp3", "wav"])
         if archivo_subido:
             audio_bytes = archivo_subido.read()
-    
     else:
-        st.write("Presiona el botón para grabar (el cuadro cambiará cuando detengas la grabación):")
+        st.write("Presiona el botón para grabar:")
         grabacion = mic_recorder(
             start_prompt="🔴 Iniciar Grabación",
             stop_prompt="⏹️ Detener y Procesar",
@@ -87,23 +138,46 @@ with tab_audios:
                 st.write(f"Subido/Grabado el: {aud['fecha']}")
                 st.audio(aud['archivo'], format='audio/wav')
 
-# --- APARTADO: MENSAJES ---
+# --- APARTADO: MENSAJES (ESTILO CHAT TELEFÓNICO) ---
 with tab_mensajes:
     st.header("Muro de Control")
-    nuevo_msg = st.text_area("Escribe una idea, propuesta o letra de canción:")
-    if st.button("Enviar al Muro", key="btn_msg"):
+    
+    # Caja contenedora del historial del chat
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    
+    for msg in st.session_state.mensajes:
+        # Si el mensaje lo escribió el usuario activo actual, va a la derecha (Azul)
+        if msg['usuario'] == usuario_actual:
+            clase_lado = "derecha"
+            nombre_mostrar = "Tú"
+        else:
+            clase_lado = "izquierda"
+            nombre_mostrar = msg['usuario']
+            
+        # Construcción de la burbuja en HTML
+        html_burbuja = f"""
+        <div class="msg-row {clase_lado}">
+            <div class="burbuja">
+                <span class="msg-meta">{nombre_mostrar} • {msg['fecha']}</span>
+                {msg['texto']}
+            </div>
+        </div>
+        """
+        st.markdown(html_burbuja, unsafe_allow_html=True)
+        
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.write("---")
+    
+    # Campo para escribir abajo (como en el cel)
+    nuevo_msg = st.text_area("Escribe un mensaje para la banda...", placeholder="Introduce tu idea o propuesta aquí...")
+    if st.button("Enviar Mensaje 🚀", key="btn_msg"):
         if nuevo_msg.strip():
             st.session_state.mensajes.append({
                 "usuario": usuario_actual,
                 "texto": nuevo_msg,
-                "fecha": datetime.now().strftime("%H:%M - %Y-%m-%d")
+                "fecha": datetime.now().strftime("%H:%M")
             })
             st.rerun()
-
-    st.write("---")
-    for msg in reversed(st.session_state.mensajes):
-        st.markdown(f"**{msg['usuario']}** <small style='color:gray;'>{msg['fecha']}</small>", unsafe_allow_html=True)
-        st.info(msg['texto'])
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
