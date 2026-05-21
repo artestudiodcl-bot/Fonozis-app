@@ -13,16 +13,15 @@ try:
 except ImportError:
     AUDIO_RECORDER_AVAILABLE = False
 
-# CONEXIÓN SEGURA LIMPIA
+# CONEXIÓN SEGURA CORREGIDA (LLAVE DIRECTA EN CÓDIGO)
 BASE_URL = st.secrets["supabase"]["url"].strip()
 if BASE_URL.endswith("/"):
     BASE_URL = BASE_URL[:-1]
-
-# Eliminar '/rest/v1' si viene integrado en la URL de los secrets
 if BASE_URL.endswith("/rest/v1"):
     BASE_URL = BASE_URL[:-8]
 
-SUPABASE_KEY = st.secrets["supabase"]["key"].strip()
+# Inyección directa de la clave para evitar errores de formato en Secrets móvil
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZ6cWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY2MjA5MTMsImV4cCI6MjAzMjE5NjkxM30.XZJbDd4TRwCOzAB3IabHYFbyN4fZ53i1gKpjGTimJgg"
 
 # Estilo personalizado general (Chat estilo iPhone)
 st.markdown("""
@@ -50,7 +49,7 @@ usuario_actual = st.sidebar.selectbox("¿Quién está usando la app?", integrant
 
 tab_audios, tab_mensajes, tab_fechas = st.tabs(["🎵 Audios", "💬 Mensajes", "📅 Fechas"])
 
-# Headers globales para REST API (PostgREST)
+# Headers globales para REST API
 headers_api = {
     "Authorization": f"Bearer {SUPABASE_KEY}",
     "apikey": SUPABASE_KEY,
@@ -170,7 +169,6 @@ with tab_mensajes:
                     st.rerun()
                 else:
                     st.error(f"Supabase rechazó el mensaje. Código: {res.status_code}")
-                    st.json(res.json())
             except Exception as e:
                 st.error(f"Error al enviar: {str(e)}")
 
