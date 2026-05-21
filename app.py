@@ -123,14 +123,16 @@ with tab_mensajes:
     st.header("Muro de Control")
     
     read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
+    mensajes_db = []
     try:
         res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
-        mensajes_db = res_msg.json() if res_msg.status_code == 200 else []
+        if res_msg.status_code == 200:
+            mensajes_db = res_msg.json()
     except:
-        mensajes_db = []
+        pass
     
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    if isinstance(mensajes_db, list):
+    if isinstance(mensajes_db, list) and len(mensajes_db) > 0:
         for msg in mensajes_db:
             es_propio = msg.get('usuario') == usuario_actual
             clase_lado = "derecha" if es_propio else "izquierda"
@@ -138,6 +140,8 @@ with tab_mensajes:
             
             html_burbuja = f'<div class="msg-row {clase_lado}"><div class="burbuja"><span class="msg-meta">{nombre_mostrar} • {msg.get("fecha", "")}</span>{msg.get("texto", "")}</div></div>'
             st.markdown(html_burbuja, unsafe_allow_html=True)
+    else:
+        st.info("Aún no hay mensajes en el muro. ¡Sé el primero!")
     st.markdown('</div>', unsafe_allow_html=True)
     
     texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
@@ -150,17 +154,12 @@ with tab_mensajes:
             }
             payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
             
-            # BLOQUE DE DIAGNÓSTICO EN VIVO
             try:
                 res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
                 if res.status_code in [200, 201]:
-                    st.success("¡Mensaje procesado por el servidor!")
                     st.rerun()
-                else:
-                    st.error(f"Error de Supabase. Código HTTP: {res.status_code}")
-                    st.code(res.text)
-            except Exception as e:
-                st.error(f"Error de red: {e}")
+            except:
+                pass
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
