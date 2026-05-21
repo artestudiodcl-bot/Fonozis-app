@@ -17,6 +17,13 @@ except ImportError:
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
 
+# ENCABEZADOS DE AUTENTICACIÓN UNIFICADOS PARA TODO EL SCRIPT
+HEADERS = {
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "apikey": SUPABASE_KEY,
+    "Content-Type": "application/json"
+}
+
 # Estilo personalizado general (Chat de interfaz limpia estilo iPhone)
 st.markdown("""
     <style>
@@ -80,12 +87,6 @@ with tab_audios:
             if res_upload.status_code in [200, 201]:
                 public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
                 
-                db_headers = {
-                    "Authorization": f"Bearer {SUPABASE_KEY}",
-                    "apikey": SUPABASE_KEY,
-                    "Content-Type": "application/json"
-                }
-                
                 payload = {
                     "nombre": nombre_audio, 
                     "categoria": categoria, 
@@ -93,8 +94,7 @@ with tab_audios:
                     "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), 
                     "archivo_url": public_url
                 }
-                # Asegurando comunicación con la tabla 'audios'
-                requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=db_headers, json=payload)
+                requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=HEADERS, json=payload)
                 st.success("¡Audio guardado exitosamente!")
                 st.rerun()
             else:
@@ -103,9 +103,8 @@ with tab_audios:
     st.write("---")
     st.subheader("Audios de la Banda")
     
-    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_audios = requests.get(f"{SUPABASE_URL}/rest/v1/audios?order=id.desc", headers=read_headers)
+        res_audios = requests.get(f"{SUPABASE_URL}/rest/v1/audios?order=id.desc", headers=HEADERS)
         audios_db = res_audios.json() if res_audios.status_code == 200 else []
     except:
         audios_db = []
@@ -123,10 +122,8 @@ with tab_audios:
 with tab_mensajes:
     st.header("Muro de Control")
     
-    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        # Forzamos la consulta a la tabla 'mensajes'
-        res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
+        res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=HEADERS)
         mensajes_db = res_msg.json() if res_msg.status_code == 200 else []
     except:
         mensajes_db = []
@@ -145,16 +142,18 @@ with tab_mensajes:
     texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
     if st.button("Enviar Mensaje 🚀"):
         if texto_chat.strip():
-            write_headers = {
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "apikey": SUPABASE_KEY,
-                "Content-Type": "application/json"
-            }
             payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
             
-            # Dirección exacta corregida y limpia
-            requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
-            st.rerun()
+            try:
+                res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=HEADERS, json=payload)
+                if res.status_code in [200, 201]:
+                    st.success("¡Mensaje enviado!")
+                    st.rerun()
+                else:
+                    st.error(f"Supabase rechazó el mensaje. Código: {res.status_code}")
+                    st.code(res.text)
+            except Exception as e:
+                st.error(f"Error de conexión: {e}")
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
@@ -168,21 +167,15 @@ with tab_fechas:
     
     if st.button("Agendar Fecha"):
         if descripcion_evento:
-            write_headers = {
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "apikey": SUPABASE_KEY,
-                "Content-Type": "application/json"
-            }
             payload = {"fecha_evento": fecha_evento.strftime("%Y-%m-%d"), "tipo": tipo_evento, "detalles": descripcion_evento, "creado_por": usuario_actual}
-            requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=write_headers, json=payload)
+            requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS, json=payload)
             st.success("¡Fecha anotada en la nube!")
             st.rerun()
             
     st.write("---")
     st.subheader("Próximos Compromisos")
-    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_fechas = requests.get(f"{SUPABASE_URL}/rest/v1/fechas", headers=read_headers)
+        res_fechas = requests.get(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS)
         fechas_db = res_fechas.json() if res_fechas.status_code == 200 else []
     except:
         fechas_db = []
