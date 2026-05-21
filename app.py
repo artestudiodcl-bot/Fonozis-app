@@ -1,4 +1,3 @@
-cat << 'EOF' > app.py
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -135,4 +134,4 @@ with tab_fechas:
     else:
         df_fechas = pd.DataFrame(st.session_state.fechas)
         st.dataframe(df_fechas.sort_values(by="Fecha"), use_container_width=True)
-EOF
+
