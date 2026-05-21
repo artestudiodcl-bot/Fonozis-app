@@ -13,10 +13,14 @@ try:
 except ImportError:
     AUDIO_RECORDER_AVAILABLE = False
 
-# CONEXIÓN SEGURA LIMPIA (Se adapta a si tu URL tiene o no la diagonal al final)
+# CONEXIÓN SEGURA LIMPIA
 BASE_URL = st.secrets["supabase"]["url"].strip()
 if BASE_URL.endswith("/"):
     BASE_URL = BASE_URL[:-1]
+
+# Eliminar '/rest/v1' si viene integrado en la URL de los secrets
+if BASE_URL.endswith("/rest/v1"):
+    BASE_URL = BASE_URL[:-8]
 
 SUPABASE_KEY = st.secrets["supabase"]["key"].strip()
 
@@ -35,6 +39,7 @@ st.markdown("""
     .msg-meta { font-size: 11px; margin-bottom: 5px; display: block; opacity: 0.7; font-weight: bold; }
     .derecha .msg-meta { color: #d0e3ff; }
     .izquierda .msg-meta { color: #a0a3a8; }
+    .error-box { background-color: #3a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #ff4b4b; margin-bottom: 15px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -44,6 +49,14 @@ integrantes = ["Integrante 1", "Integrante 2", "Integrante 3", "Integrante 4"]
 usuario_actual = st.sidebar.selectbox("¿Quién está usando la app?", integrantes)
 
 tab_audios, tab_mensajes, tab_fechas = st.tabs(["🎵 Audios", "💬 Mensajes", "📅 Fechas"])
+
+# Headers globales para REST API (PostgREST)
+headers_api = {
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "apikey": SUPABASE_KEY,
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
+}
 
 # --- APARTADO: AUDIOS ---
 with tab_audios:
@@ -57,12 +70,12 @@ with tab_audios:
             audio_bytes = archivo_subido.read()
     else:
         if AUDIO_RECORDER_AVAILABLE:
-            st.write("Haz clic en el micrófono para empezar a grabar (se pondrá rojo y registrará en WAV):")
+            st.write("Haz clic en el micrófono para empezar a grabar:")
             audio_bytes = audio_recorder(text="", recording_color="#ff4b4b", neutral_color="#ffffff")
             if audio_bytes:
                 st.audio(audio_bytes, format="audio/wav")
         else:
-            st.error("El componente de grabación en vivo no está disponible en este navegador.")
+            st.error("El componente de grabación en vivo no está disponible.")
         
     nombre_audio = st.text_input("Nombre de la pista / Idea:")
     categoria = st.selectbox("Categoría", ["Riff suelto", "Ensayo completo", "Maqueta", "Mezcla"])
@@ -77,20 +90,11 @@ with tab_audios:
                 "Content-Type": "audio/wav"
             }
             
-            # Ajuste de Storage para saltar la duplicación de /rest/v1
-            raiz_url = BASE_URL.split("/rest/v1")[0]
-            upload_url = f"{raiz_url}/storage/v1/object/banco-audios/{filename}"
+            upload_url = f"{BASE_URL}/storage/v1/object/banco-audios/{filename}"
             res_upload = requests.post(upload_url, headers=storage_headers, data=audio_bytes)
             
             if res_upload.status_code in [200, 201]:
-                public_url = f"{raiz_url}/storage/v1/object/public/banco-audios/{filename}"
-                
-                db_headers = {
-                    "Authorization": f"Bearer {SUPABASE_KEY}",
-                    "apikey": SUPABASE_KEY,
-                    "Content-Type": "application/json"
-                }
-                
+                public_url = f"{BASE_URL}/storage/v1/object/public/banco-audios/{filename}"
                 payload = {
                     "nombre": nombre_audio, 
                     "categoria": categoria, 
@@ -98,18 +102,17 @@ with tab_audios:
                     "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), 
                     "archivo_url": public_url
                 }
-                requests.post(f"{BASE_URL}/audios", headers=db_headers, json=payload)
+                requests.post(f"{BASE_URL}/rest/v1/audios", headers=headers_api, json=payload)
                 st.success("¡Audio guardado exitosamente!")
                 st.rerun()
             else:
-                st.error(f"Error al subir el archivo al almacenamiento (Código: {res_upload.status_code})")
+                st.error(f"Error en Storage: {res_upload.status_code} - {res_upload.text}")
 
     st.write("---")
     st.subheader("Audios de la Banda")
     
-    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_audios = requests.get(f"{BASE_URL}/audios?order=id.desc", headers=read_headers)
+        res_audios = requests.get(f"{BASE_URL}/rest/v1/audios?order=id.desc", headers=headers_api)
         audios_db = res_audios.json() if res_audios.status_code == 200 else []
     except:
         audios_db = []
@@ -118,8 +121,8 @@ with tab_audios:
         st.info("Aún no hay audios guardados.")
     else:
         for aud in audios_db:
-            with st.expander(f"🎵 {aud.get('nombre', 'Audio')} ({aud.get('categoria', 'Suelto')}) - por {aud.get('usuario', 'Desconocido')}"):
-                st.write(f"Grabado el: {aud.get('fecha', '')}")
+            with st.expander(f"🎵 {aud.get('nombre', 'Audio')} - por {aud.get('usuario', 'Desconocido')}"):
+                st.write(f"Categoría: {aud.get('categoria', '')} • Fecha: {aud.get('fecha', '')}")
                 if aud.get('archivo_url'):
                     st.audio(aud.get('archivo_url'))
 
@@ -127,15 +130,18 @@ with tab_audios:
 with tab_mensajes:
     st.header("Muro de Control")
     
-    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     mensajes_db = []
+    error_msg = None
     
     try:
-        res_msg = requests.get(f"{BASE_URL}/mensajes?order=id.asc", headers=read_headers)
+        res_msg = requests.get(f"{BASE_URL}/rest/v1/mensajes?order=id.asc", headers=headers_api)
         if res_msg.status_code == 200:
             mensajes_db = res_msg.json()
+        else:
+            error_msg = f"Error al leer mensajes de Supabase (Código: {res_msg.status_code})"
+            st.markdown(f'<div class="error-box">{error_msg}<br><code style="color:#ff8888">{res_msg.text}</code></div>', unsafe_allow_html=True)
     except Exception as e:
-        pass
+        st.error(f"Error de conexión: {str(e)}")
     
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     if isinstance(mensajes_db, list) and len(mensajes_db) > 0:
@@ -143,35 +149,30 @@ with tab_mensajes:
             es_propio = msg.get('usuario') == usuario_actual
             clase_lado = "derecha" if es_propio else "izquierda"
             nombre_mostrar = "Tú" if es_propio else msg.get('usuario', 'Anónimo')
+            texto_burbuja = msg.get("texto", "")
             
-            hora_completa = msg.get("created_at", "")
-            hora_corta = hora_completa[11:16] if (hora_completa and len(hora_completa) > 16) else datetime.now().strftime("%H:%M")
-            
-            html_burbuja = f'<div class="msg-row {clase_lado}"><div class="burbuja"><span class="msg-meta">{nombre_mostrar} • {hora_corta}</span>{msg.get("texto", "")}</div></div>'
+            html_burbuja = f'<div class="msg-row {clase_lado}"><div class="burbuja"><span class="msg-meta">{nombre_mostrar}</span>{texto_burbuja}</div></div>'
             st.markdown(html_burbuja, unsafe_allow_html=True)
-    else:
+    elif not error_msg:
         st.info("Aún no hay mensajes en el muro. ¡Sé el primero!")
     st.markdown('</div>', unsafe_allow_html=True)
     
     texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
     if st.button("Enviar Mensaje 🚀"):
         if texto_chat.strip():
-            write_headers = {
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "apikey": SUPABASE_KEY,
-                "Content-Type": "application/json"
-            }
             payload = {
                 "usuario": usuario_actual, 
                 "texto": texto_chat.strip()
             }
-            
             try:
-                res = requests.post(f"{BASE_URL}/mensajes", headers=write_headers, json=payload)
+                res = requests.post(f"{BASE_URL}/rest/v1/mensajes", headers=headers_api, json=payload)
                 if res.status_code in [200, 201]:
                     st.rerun()
+                else:
+                    st.error(f"Supabase rechazó el mensaje. Código: {res.status_code}")
+                    st.json(res.json())
             except Exception as e:
-                pass
+                st.error(f"Error al enviar: {str(e)}")
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
@@ -185,21 +186,20 @@ with tab_fechas:
     
     if st.button("Agendar Fecha"):
         if descripcion_evento:
-            write_headers = {
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "apikey": SUPABASE_KEY,
-                "Content-Type": "application/json"
+            payload = {
+                "fecha_evento": fecha_evento.strftime("%Y-%m-%d"), 
+                "tipo": tipo_evento, 
+                "detalles": descripcion_evento, 
+                "creado_por": usuario_actual
             }
-            payload = {"fecha_evento": fecha_evento.strftime("%Y-%m-%d"), "tipo": tipo_evento, "detalles": descripcion_evento, "creado_por": usuario_actual}
-            requests.post(f"{BASE_URL}/fechas", headers=write_headers, json=payload)
+            requests.post(f"{BASE_URL}/rest/v1/fechas", headers=headers_api, json=payload)
             st.success("¡Fecha anotada en la nube!")
             st.rerun()
             
     st.write("---")
     st.subheader("Próximos Compromisos")
-    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_fechas = requests.get(f"{BASE_URL}/fechas", headers=read_headers)
+        res_fechas = requests.get(f"{BASE_URL}/rest/v1/fechas", headers=headers_api)
         fechas_db = res_fechas.json() if res_fechas.status_code == 200 else []
     except:
         fechas_db = []
