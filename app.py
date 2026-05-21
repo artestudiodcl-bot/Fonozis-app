@@ -52,7 +52,6 @@ with tab_audios:
     
     else:
         st.write("Presiona el botón para grabar (el cuadro cambiará cuando detengas la grabación):")
-        # Grabador nativo estable
         grabacion = mic_recorder(
             start_prompt="🔴 Iniciar Grabación",
             stop_prompt="⏹️ Detener y Procesar",
@@ -134,4 +133,3 @@ with tab_fechas:
     else:
         df_fechas = pd.DataFrame(st.session_state.fechas)
         st.dataframe(df_fechas.sort_values(by="Fecha"), use_container_width=True)
-
