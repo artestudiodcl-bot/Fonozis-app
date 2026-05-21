@@ -13,14 +13,8 @@ try:
 except ImportError:
     AUDIO_RECORDER_AVAILABLE = False
 
-# CONEXIÓN SEGURA CORREGIDA (LLAVE DIRECTA EN CÓDIGO)
-BASE_URL = st.secrets["supabase"]["url"].strip()
-if BASE_URL.endswith("/"):
-    BASE_URL = BASE_URL[:-1]
-if BASE_URL.endswith("/rest/v1"):
-    BASE_URL = BASE_URL[:-8]
-
-# Inyección directa de la clave para evitar errores de formato en Secrets móvil
+# CONEXIÓN INTEGRADA DIRECTA (SIN DEPENDER DE SECRETS MÓVILES)
+BASE_URL = "https://yzwwstvzqjtaaoqxbwtz.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZ6cWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY2MjA5MTMsImV4cCI6MjAzMjE5NjkxM30.XZJbDd4TRwCOzAB3IabHYFbyN4fZ53i1gKpjGTimJgg"
 
 # Estilo personalizado general (Chat estilo iPhone)
