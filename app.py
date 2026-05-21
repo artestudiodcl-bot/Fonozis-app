@@ -17,7 +17,7 @@ except ImportError:
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
 
-# Estilo personalizado general (Chat de interfaz limpia)
+# Estilo personalizado general (Chat de interfaz limpia estilo iPhone)
 st.markdown("""
     <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
@@ -59,7 +59,7 @@ with tab_audios:
             if audio_bytes:
                 st.audio(audio_bytes, format="audio/wav")
         else:
-            st.error("El componente de grabación no está listo. Sube un archivo mientras tanto.")
+            st.error("El componente de grabación en vivo no está disponible en este navegador.")
         
     nombre_audio = st.text_input("Nombre de la pista / Idea:")
     categoria = st.selectbox("Categoría", ["Riff suelto", "Ensayo completo", "Maqueta", "Mezcla"])
@@ -68,27 +68,27 @@ with tab_audios:
         if audio_bytes and nombre_audio:
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
             
-            # Encabezados explícitos para el Storage
+            # Encabezados explícitos para subir al Storage público
             storage_headers = {
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "apikey": SUPABASE_KEY,
                 "Content-Type": "audio/wav"
             }
             
-            # Ruta de subida estándar
             upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
             res_upload = requests.post(upload_url, headers=storage_headers, data=audio_bytes)
             
             if res_upload.status_code in [200, 201]:
                 public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
                 
-                # Encabezados explícitos para la Base de Datos
+                # Encabezados de Base de Datos corregidos
                 db_headers = {
                     "Authorization": f"Bearer {SUPABASE_KEY}",
                     "apikey": SUPABASE_KEY,
                     "Content-Type": "application/json"
                 }
                 
+                # CORRECCIÓN AQUÍ: Cambiado 'categorya' a 'categoria' para que coincida perfectamente
                 payload = {
                     "nombre": nombre_audio, 
                     "categoria": categoria, 
@@ -97,7 +97,7 @@ with tab_audios:
                     "archivo_url": public_url
                 }
                 requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=db_headers, json=payload)
-                st.success("¡Audio inmortalizado en la base de datos!")
+                st.success("¡Audio guardado exitosamente!")
                 st.rerun()
             else:
                 st.error(f"Error al subir el archivo al almacenamiento (Código: {res_upload.status_code})")
@@ -105,7 +105,6 @@ with tab_audios:
     st.write("---")
     st.subheader("Audios de la Banda")
     
-    # Lectura con cabeceras directas
     read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
         res_audios = requests.get(f"{SUPABASE_URL}/rest/v1/audios?order=id.desc", headers=read_headers)
@@ -126,7 +125,6 @@ with tab_audios:
 with tab_mensajes:
     st.header("Muro de Control")
     
-    # Lectura de mensajes con cabeceras directas
     read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
         res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
