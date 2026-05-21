@@ -64,27 +64,18 @@ with tab_audios:
         if audio_bytes and nombre_audio:
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
             
-            # Intentar asegurar que el contenedor 'banco-audios' exista en Supabase
+            # Forzar creación automática si el bucket no existe
             bucket_setup_url = f"{SUPABASE_URL}/storage/v1/bucket"
             bucket_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "application/json"}
             requests.post(bucket_setup_url, headers=bucket_headers, json={"id": "banco-audios", "name": "banco-audios", "public": True})
             
-            # Rutas oficiales de subida de archivos
+            # Subida física
             upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
-            file_headers = {
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "apikey": SUPABASE_KEY,
-                "Content-Type": "audio/wav"
-            }
-            
-            # Mandar el archivo físico .wav
+            file_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "audio/wav"}
             res_upload = requests.post(upload_url, headers=file_headers, data=audio_bytes)
             
             if res_upload.status_code in [200, 201]:
-                # Generar link directo para que se escuche en cualquier celular
                 public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
-                
-                # Registrar metadatos en la base de datos
                 payload = {
                     "nombre": nombre_audio, 
                     "categoria": categoria, 
@@ -93,10 +84,10 @@ with tab_audios:
                     "archivo_url": public_url
                 }
                 requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=HEADERS, json=payload)
-                st.success("¡Audio inmortalizado en la base de datos!")
-                st.rerun()
+                st.success("¡Audio inmortalizado! Refrescando...")
+                st.experimental_rerun()
             else:
-                st.error(f"Error al subir el archivo al almacenamiento. (Código de error: {res_upload.status_code}). Verifica el nombre de tu bucket.")
+                st.error(f"Error al subir el archivo al almacenamiento. (Código: {res_upload.status_code})")
 
     st.write("---")
     st.subheader("Audios de la Banda")
@@ -136,15 +127,15 @@ with tab_mensajes:
             st.markdown(html_burbuja, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    def enviar_y_limpiar():
-        texto = st.session_state.caja_chat.strip()
-        if texto:
-            payload = {"usuario": usuario_actual, "texto": texto, "fecha": datetime.now().strftime("%H:%M")}
+    # Formulario controlado para envío y refresco instantáneo del chat
+    with st.form(key="chat_form", clear_on_submit=True):
+        texto = st.text_area("Escribe un mensaje para la banda...")
+        submit_button = st.form_submit_button(label="Enviar Mensaje 🚀")
+        
+        if submit_button and texto.strip():
+            payload = {"usuario": usuario_actual, "texto": texto.strip(), "fecha": datetime.now().strftime("%H:%M")}
             requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=HEADERS, json=payload)
-        st.session_state.caja_chat = ""
-
-    st.text_area("Escribe un mensaje para la banda...", key="caja_chat")
-    st.button("Enviar Mensaje 🚀", on_click=enviar_y_limpiar)
+            st.experimental_rerun()
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
@@ -161,7 +152,7 @@ with tab_fechas:
             payload = {"fecha_evento": fecha_evento.strftime("%Y-%m-%d"), "tipo": tipo_evento, "detalles": descripcion_evento, "creado_por": usuario_actual}
             requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS, json=payload)
             st.success("¡Fecha anotada en la nube!")
-            st.rerun()
+            st.experimental_rerun()
             
     st.write("---")
     st.subheader("Próximos Compromisos")
