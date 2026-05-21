@@ -7,7 +7,7 @@ st.title("🎸 Fonozis: HQ")
 
 # URL DIRECTA (Asegúrate de que este ID sea el correcto de tu proyecto en Supabase)
 # Copia este ID desde el panel de Supabase: Project Settings > API
-PROJECT_ID = "yzwwstvzqjtaaoqxbwtz"
+PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 
 st.write(f"Conectando a: {BASE_URL}")
