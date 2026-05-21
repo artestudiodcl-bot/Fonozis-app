@@ -143,7 +143,6 @@ with tab_mensajes:
     texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
     if st.button("Enviar Mensaje 🚀"):
         if texto_chat.strip():
-            # CORRECCIÓN AQUÍ: Se añadió 'apikey' a los encabezados para dar permisos de escritura completos
             write_headers = {
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "apikey": SUPABASE_KEY,
@@ -151,8 +150,17 @@ with tab_mensajes:
             }
             payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
             
-            requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
-            st.rerun()
+            # BLOQUE DE DIAGNÓSTICO EN VIVO
+            try:
+                res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
+                if res.status_code in [200, 201]:
+                    st.success("¡Mensaje procesado por el servidor!")
+                    st.rerun()
+                else:
+                    st.error(f"Error de Supabase. Código HTTP: {res.status_code}")
+                    st.code(res.text)
+            except Exception as e:
+                st.error(f"Error de red: {e}")
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
