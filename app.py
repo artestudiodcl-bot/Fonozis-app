@@ -61,13 +61,13 @@ with tab_audios:
     if st.button("Guardar Audio en el Banco"):
         if audio_bytes and nombre_audio:
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
-            upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
+            upload_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
 
             file_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "audio/wav"}
             res_upload = requests.post(upload_url, headers=file_headers, data=audio_bytes)
 
             if res_upload.status_code in [200, 201]:
-                public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
+                upload_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
                 payload = {"nombre": nombre_audio, "categoria": categoria, "usuario": usuario_actual, "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), "archivo_url": public_url}
                 requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=HEADERS, json=payload)
                 st.success("¡Audio inmortalizado en la base de datos!")
