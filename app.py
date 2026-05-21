@@ -138,7 +138,11 @@ with tab_mensajes:
             clase_lado = "derecha" if es_propio else "izquierda"
             nombre_mostrar = "Tú" if es_propio else msg.get('usuario', 'Anónimo')
             
-            html_burbuja = f'<div class="msg-row {clase_lado}"><div class="burbuja"><span class="msg-meta">{nombre_mostrar} • {msg.get("fecha", "")}</span>{msg.get("texto", "")}</div></div>'
+            # Ajuste de lectura para mostrar la hora usando created_at de forma limpia
+            hora_completa = msg.get("created_at", "")
+            hora_corta = hora_completa[11:16] if (hora_completa and len(hora_completa) > 16) else datetime.now().strftime("%H:%M")
+            
+            html_burbuja = f'<div class="msg-row {clase_lado}"><div class="burbuja"><span class="msg-meta">{nombre_mostrar} • {hora_corta}</span>{msg.get("texto", "")}</div></div>'
             st.markdown(html_burbuja, unsafe_allow_html=True)
     else:
         st.info("Aún no hay mensajes en el muro. ¡Sé el primero!")
@@ -152,7 +156,12 @@ with tab_mensajes:
                 "apikey": SUPABASE_KEY,
                 "Content-Type": "application/json"
             }
-            payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
+            # CORRECCIÓN DE COLUMNA: Cambiamos 'fecha' por 'created_at' para coincidir con tu Supabase real
+            payload = {
+                "usuario": usuario_actual, 
+                "texto": texto_chat.strip(), 
+                "created_at": datetime.now().isoformat()
+            }
             
             try:
                 res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
