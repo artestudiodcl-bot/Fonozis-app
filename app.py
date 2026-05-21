@@ -13,7 +13,7 @@ try:
 except ImportError:
     AUDIO_RECORDER_AVAILABLE = False
 
-# Conexión básica a Supabase vía API Rest
+# CONEXIÓN SEGURA USANDO SECRETS (Sin revelar datos en GitHub)
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
 
@@ -125,13 +125,12 @@ with tab_mensajes:
     read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     mensajes_db = []
     
-    # 1. Intentamos leer los mensajes y si hay un error de base de datos, lo mostramos explícitamente
-    res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
-    if res_msg.status_code == 200:
-        mensajes_db = res_msg.json()
-    else:
-        st.error(f"Error al leer mensajes de Supabase (Código: {res_msg.status_code})")
-        st.code(res_msg.text)
+    try:
+        res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
+        if res_msg.status_code == 200:
+            mensajes_db = res_msg.json()
+    except Exception as e:
+        pass
     
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     if isinstance(mensajes_db, list) and len(mensajes_db) > 0:
@@ -140,6 +139,7 @@ with tab_mensajes:
             clase_lado = "derecha" if es_propio else "izquierda"
             nombre_mostrar = "Tú" if es_propio else msg.get('usuario', 'Anónimo')
             
+            # Formatear la marca de tiempo de Supabase
             hora_completa = msg.get("created_at", "")
             hora_corta = hora_completa[11:16] if (hora_completa and len(hora_completa) > 16) else datetime.now().strftime("%H:%M")
             
@@ -155,23 +155,21 @@ with tab_mensajes:
             write_headers = {
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "apikey": SUPABASE_KEY,
-                "Content-Type": "application/json",
-                "Prefer": "return=minimal"
+                "Content-Type": "application/json"
             }
-            
-            # Mandamos un payload básico para evitar rechazos de columnas
             payload = {
                 "usuario": usuario_actual, 
-                "texto": texto_chat.strip()
+                "texto": texto_chat.strip(),
+                "usuario_text": usuario_actual,
+                "texto_text": texto_chat.strip()
             }
             
-            # 2. Intentamos insertar y si falla, pintamos el error en pantalla
-            res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
-            if res.status_code in [200, 201]:
-                st.rerun()
-            else:
-                st.error(f"Error al enviar el mensaje. Código de respuesta: {res.status_code}")
-                st.code(res.text)
+            try:
+                res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
+                if res.status_code in [200, 201]:
+                    st.rerun()
+            except Exception as e:
+                pass
 
 # --- APARTADO: FECHAS ---
 with tab_fechas:
