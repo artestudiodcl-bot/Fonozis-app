@@ -16,11 +16,6 @@ except ImportError:
 # Conexión básica a Supabase vía API Rest
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
-HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json"
-}
 
 # Estilo personalizado general (Chat de interfaz limpia)
 st.markdown("""
@@ -73,23 +68,27 @@ with tab_audios:
         if audio_bytes and nombre_audio:
             filename = f"{int(datetime.now().timestamp())}_{nombre_audio.replace(' ', '_')}.wav"
             
-            # Forzar creación o chequeo del bucket público
-            bucket_setup_url = f"{SUPABASE_URL}/storage/v1/bucket"
-            bucket_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "application/json"}
-            requests.post(bucket_setup_url, headers=bucket_headers, json={"id": "banco-audios", "name": "banco-audios", "public": True})
-            
-            # Ruta de subida estándar
-            upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
-            file_headers = {
+            # Encabezados explícitos para el Storage
+            storage_headers = {
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "apikey": SUPABASE_KEY,
                 "Content-Type": "audio/wav"
             }
             
-            res_upload = requests.post(upload_url, headers=file_headers, data=audio_bytes)
+            # Ruta de subida estándar
+            upload_url = f"{SUPABASE_URL}/storage/v1/object/banco-audios/{filename}"
+            res_upload = requests.post(upload_url, headers=storage_headers, data=audio_bytes)
             
             if res_upload.status_code in [200, 201]:
                 public_url = f"{SUPABASE_URL}/storage/v1/object/public/banco-audios/{filename}"
+                
+                # Encabezados explícitos para la Base de Datos
+                db_headers = {
+                    "Authorization": f"Bearer {SUPABASE_KEY}",
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json"
+                }
+                
                 payload = {
                     "nombre": nombre_audio, 
                     "categoria": categoria, 
@@ -97,7 +96,7 @@ with tab_audios:
                     "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"), 
                     "archivo_url": public_url
                 }
-                requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=HEADERS, json=payload)
+                requests.post(f"{SUPABASE_URL}/rest/v1/audios", headers=db_headers, json=payload)
                 st.success("¡Audio inmortalizado en la base de datos!")
                 st.rerun()
             else:
@@ -105,8 +104,11 @@ with tab_audios:
 
     st.write("---")
     st.subheader("Audios de la Banda")
+    
+    # Lectura con cabeceras directas
+    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_audios = requests.get(f"{SUPABASE_URL}/rest/v1/audios?order=id.desc", headers=HEADERS)
+        res_audios = requests.get(f"{SUPABASE_URL}/rest/v1/audios?order=id.desc", headers=read_headers)
         audios_db = res_audios.json() if res_audios.status_code == 200 else []
     except:
         audios_db = []
@@ -124,8 +126,10 @@ with tab_audios:
 with tab_mensajes:
     st.header("Muro de Control")
     
+    # Lectura de mensajes con cabeceras directas
+    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=HEADERS)
+        res_msg = requests.get(f"{SUPABASE_URL}/rest/v1/mensajes?order=id.asc", headers=read_headers)
         mensajes_db = res_msg.json() if res_msg.status_code == 200 else []
     except:
         mensajes_db = []
@@ -141,12 +145,16 @@ with tab_mensajes:
             st.markdown(html_burbuja, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Manejo directo del chat sin funciones intermedias rotas
     texto_chat = st.text_area("Escribe un mensaje para la banda...", key="caja_chat_input")
     if st.button("Enviar Mensaje 🚀"):
         if texto_chat.strip():
+            write_headers = {
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_KEY,
+                "Content-Type": "application/json"
+            }
             payload = {"usuario": usuario_actual, "texto": texto_chat.strip(), "fecha": datetime.now().strftime("%H:%M")}
-            res = requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=HEADERS, json=payload)
+            requests.post(f"{SUPABASE_URL}/rest/v1/mensajes", headers=write_headers, json=payload)
             st.rerun()
 
 # --- APARTADO: FECHAS ---
@@ -161,15 +169,21 @@ with tab_fechas:
     
     if st.button("Agendar Fecha"):
         if descripcion_evento:
+            write_headers = {
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_KEY,
+                "Content-Type": "application/json"
+            }
             payload = {"fecha_evento": fecha_evento.strftime("%Y-%m-%d"), "tipo": tipo_evento, "detalles": descripcion_evento, "creado_por": usuario_actual}
-            requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS, json=payload)
+            requests.post(f"{SUPABASE_URL}/rest/v1/fechas", headers=write_headers, json=payload)
             st.success("¡Fecha anotada en la nube!")
             st.rerun()
             
     st.write("---")
     st.subheader("Próximos Compromisos")
+    read_headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
     try:
-        res_fechas = requests.get(f"{SUPABASE_URL}/rest/v1/fechas", headers=HEADERS)
+        res_fechas = requests.get(f"{SUPABASE_URL}/rest/v1/fechas", headers=read_headers)
         fechas_db = res_fechas.json() if res_fechas.status_code == 200 else []
     except:
         fechas_db = []
