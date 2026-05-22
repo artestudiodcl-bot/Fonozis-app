@@ -6,17 +6,16 @@ from datetime import datetime
 PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
-
 st.set_page_config(page_title="Fonozis", page_icon="🎸")
 
-# --- CSS PARA ESTILO CHAT ---
+# --- CSS PARA ESTILO CHAT (Look de iPhone) ---
 st.markdown("""
     <style>
     .chat-bubble {
         padding: 10px 15px;
         border-radius: 20px;
         margin-bottom: 10px;
-        background-color: #333;
+        background-color: #007AFF;
         color: white;
         width: fit-content;
         max-width: 80%;
@@ -50,22 +49,34 @@ with tab1:
         else:
             st.error(f"Error al subir: {res.status_code}")
 
-# --- TAB 2: MURO DE TEXTO ---
+# --- TAB 2: MURO DE CONTROL ---
 with tab2:
     st.subheader("Muro de Control")
-    msg = st.text_input("Escribe algo para la banda:", key="input_msg")
-    if st.button("Enviar mensaje"):
+    
+    # Inicializar estado para limpiar el input
+    if "msg_input" not in st.session_state:
+        st.session_state.msg_input = ""
+
+    def enviar_mensaje():
+        msg = st.session_state.msg_input
         if msg:
             msg_filename = f"msg_{datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
             url_msg = f"{BASE_URL}/storage/v1/object/mensajes/{msg_filename}"
             headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
             requests.post(url_msg, headers=headers, data=msg.encode('utf-8'))
-            st.rerun()
+            st.session_state.msg_input = "" # Limpiamos
+
+    st.text_input("Escribe algo para la banda:", key="msg_input", on_change=enviar_mensaje)
+    
+    if st.button("Enviar mensaje"):
+        enviar_mensaje()
+        st.rerun()
 
     # Leer mensajes
     res_list_msg = requests.post(f"{BASE_URL}/storage/v1/object/list/mensajes", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
     if res_list_msg.status_code == 200:
-        for m in sorted(res_list_msg.json(), key=lambda x: x['name']):
+        mensajes = sorted(res_list_msg.json(), key=lambda x: x['name'])
+        for m in mensajes:
             content = requests.get(f"{BASE_URL}/storage/v1/object/public/mensajes/{m['name']}", headers={"apikey": SUPABASE_KEY}).text
             st.markdown(f'<div class="chat-bubble">{content}</div>', unsafe_allow_html=True)
 
