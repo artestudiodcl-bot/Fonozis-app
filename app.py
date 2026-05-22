@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 from datetime import datetime
-from streamlit_audiorecorder import audiorecorder
 
 # --- CONFIGURACIÓN ---
 PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
