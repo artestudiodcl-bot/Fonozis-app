@@ -19,19 +19,16 @@ st.markdown("""
 st.title("🎸 Fonozis: HQ de la Banda")
 tab1, tab2, tab3 = st.tabs(["🎙️ Grabar Idea", "💬 Muro", "🎧 Audios"])
 
-# --- TAB 1: GRABADOR ---
+# --- TAB 1: SUBIR IDEA ---
 with tab1:
-    st.subheader("Graba tu idea")
-    comentario = st.text_input("Etiqueta (ej. Riff nuevo):")
+    st.subheader("Capturar idea")
+    comentario = st.text_input("Etiqueta (ej. Riff nuevo, Bajo):")
     
-    # Botón de grabación nativo de la librería
-    audio = audiorecorder("Haz clic para grabar", "Haz clic para detener")
+    # Al tocar aquí, el celular ofrece la opción de grabar voz nativa
+    archivo = st.file_uploader("Presiona aquí para elegir audio o grabar", type=["mp3", "wav"])
     
-    if len(audio) > 0 and st.button("Publicar grabación"):
-        filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{comentario.replace(' ', '_')}.wav"
-        url_subida = f"{BASE_URL}/storage/v1/object/audios/{filename}"
-        headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "audio/wav"}
-        
+    if archivo and st.button("Publicar en la banda"):
+        # ... (Tu código de subida a Supabase sigue igual)        
         with st.spinner('Publicando...'):
             res = requests.post(url_subida, headers=headers, data=audio.tobytes())
         
