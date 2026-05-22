@@ -11,7 +11,7 @@ st.set_page_config(page_title="Fonozis", page_icon="🎸")
 # --- LOGIN SIMBÓLICO ---
 if "usuario" not in st.session_state:
     st.title("🎸 Fonozis: Identifícate")
-    nombre = st.selectbox("¿Quién eres?", ["Elige tu nombre", "Juan (Bajo)", "Pedro (Guitarra)", "Ana (Voz)", "Carlos (Batería)"])
+    nombre = st.selectbox("¿Quién eres?", ["Elige tu nombre", "Noe (Bajo)", "Gaston (Guitarra)", "Ricardo (Voz)", "Jerry (Batería)"])
     if st.button("Entrar") and nombre != "Elige tu nombre":
         st.session_state.usuario = nombre
         st.rerun()
