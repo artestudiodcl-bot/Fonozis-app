@@ -6,7 +6,7 @@ from datetime import datetime
 PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
-st.set_page_config(page_title="Fonozis", page_icon="🎸")
+st.set_page_config(page_title="Fonozis", page_icon="logo_app.png")
 
 # --- LOGIN SIMBÓLICO ---
 if "usuario" not in st.session_state:
@@ -17,7 +17,7 @@ if "usuario" not in st.session_state:
         st.rerun()
     st.stop()
 
-# --- CSS ESTILO IMESSAGE ---
+# --- CSS ESTILO IMESSAGE Y LAYOUT ---
 st.markdown("""
     <style>
     .chat-bubble-me { background-color: #007AFF; color: white; padding: 10px 15px; border-radius: 18px; margin: 5px 0; width: fit-content; margin-left: auto; text-align: right; }
@@ -27,6 +27,13 @@ st.markdown("""
 
 st.title(f"🎸 Fonozis | {st.session_state.usuario}")
 
+# --- ALERTAS DE NOVEDADES ---
+res_check = requests.post(f"{BASE_URL}/storage/v1/object/list/audios", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
+if res_check.status_code == 200:
+    cantidad = len(res_check.json())
+    if cantidad > 0:
+        st.sidebar.info(f"🎵 Ideas en biblioteca: {cantidad}")
+
 tab1, tab2, tab3 = st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])
 
 # --- TAB 1: SUBIR IDEA ---
@@ -34,7 +41,7 @@ with tab1:
     archivo = st.file_uploader("Selecciona o graba tu idea", type=["mp3", "wav", "m4a"])
     etiqueta = st.text_input("Nombre de la idea:")
     
-    if archivo and etiqueta and st.button("Publicar"):
+    if archivo and etiqueta and st.button("Publicar en la banda"):
         filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}_{etiqueta.replace(' ', '_')}.mp3"
         url_subida = f"{BASE_URL}/storage/v1/object/audios/{filename}"
         headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
@@ -42,7 +49,7 @@ with tab1:
         with st.spinner('Publicando...'):
             res = requests.post(url_subida, headers=headers, data=archivo.getvalue())
         if res.status_code == 200:
-            st.success("¡Publicado!")
+            st.success("¡Idea publicada!")
             st.rerun()
 
 # --- TAB 2: MURO ---
@@ -62,8 +69,7 @@ with tab2:
 
     res_list_msg = requests.post(f"{BASE_URL}/storage/v1/object/list/mensajes", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
     if res_list_msg.status_code == 200:
-        mensajes = sorted(res_list_msg.json(), key=lambda x: x['name'], reverse=True)
-        for m in mensajes:
+        for m in sorted(res_list_msg.json(), key=lambda x: x['name'], reverse=True):
             raw_content = requests.get(f"{BASE_URL}/storage/v1/object/public/mensajes/{m['name']}", headers={"apikey": SUPABASE_KEY}).text
             if "|" in raw_content:
                 user, text = raw_content.split("|", 1)
@@ -72,10 +78,11 @@ with tab2:
 
 # --- TAB 3: AUDIOS ---
 with tab3:
+    if st.button("Actualizar lista"): st.rerun()
     res_list = requests.post(f"{BASE_URL}/storage/v1/object/list/audios", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
     if res_list.status_code == 200:
         for f in reversed(res_list.json()):
-            nombre_archivo = f['name'].split('_', 1)[-1]
+            nombre_archivo = f['name'].split('_', 1)[-1].replace('.mp3', '')
             file_url = f"{BASE_URL}/storage/v1/object/public/audios/{f['name']}"
             with st.expander(f"🎵 {nombre_archivo.replace('_', ' ')}"):
                 st.audio(file_url)
