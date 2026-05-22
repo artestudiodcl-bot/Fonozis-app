@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from datetime import datetime
+from streamlit_audio_recorder import audio_recorder
 
 # --- CONFIGURACIÓN ---
 PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
@@ -8,7 +9,7 @@ BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
 st.set_page_config(page_title="Fonozis", page_icon="🎸")
 
-# --- CSS PARA ESTILO CHAT (Look de iPhone) ---
+# --- CSS PARA ESTILO CHAT ---
 st.markdown("""
     <style>
     .chat-bubble {
@@ -26,26 +27,29 @@ st.markdown("""
 
 st.title("🎸 Fonozis: HQ de la Banda")
 
-tab1, tab2, tab3 = st.tabs(["🎙️ Subir Idea", "💬 Muro de Control", "🎧 Audios"])
+tab1, tab2, tab3 = st.tabs(["🎙️ Grabar/Subir", "💬 Muro de Control", "🎧 Audios"])
 
-# --- TAB 1: SUBIR AUDIO ---
+# --- TAB 1: GRABAR Y SUBIR ---
 with tab1:
-    st.subheader("Subir nueva idea")
-    comentario = st.text_input("Etiqueta (ej. Riff nuevo, Bajo):")
-    archivo = st.file_uploader("Selecciona el archivo (mp3/wav)", type=["mp3", "wav"])
+    st.subheader("Capturar nueva idea")
+    comentario = st.text_input("Etiqueta (ej. Riff nuevo, Solo):")
     
-    if archivo and st.button("Publicar en el muro de audios"):
-        prefijo = comentario.replace(' ', '_') if comentario else "Idea"
-        filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{prefijo}_{archivo.name.replace(' ', '_')}"
+    # Grabador de audio
+    audio_bytes = audio_recorder(text="Presiona para grabar", recording_color="#e74c3c", neutral_color="#3498db")
+    
+    if audio_bytes and st.button("Publicar grabación"):
+        prefijo = comentario.replace(' ', '_') if comentario else "Grabacion"
+        filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{prefijo}.wav"
         
         url_subida = f"{BASE_URL}/storage/v1/object/audios/{filename}"
-        headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": archivo.type}
+        headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY, "Content-Type": "audio/wav"}
         
-        with st.spinner('Subiendo...'):
-            res = requests.post(url_subida, headers=headers, data=archivo.getvalue())
+        with st.spinner('Publicando...'):
+            res = requests.post(url_subida, headers=headers, data=audio_bytes)
         
         if res.status_code == 200:
-            st.success("¡Audio publicado!")
+            st.success("¡Publicado con éxito!")
+            st.rerun()
         else:
             st.error(f"Error al subir: {res.status_code}")
 
@@ -53,7 +57,6 @@ with tab1:
 with tab2:
     st.subheader("Muro de Control")
     
-    # Inicializar estado para limpiar el input
     if "msg_input" not in st.session_state:
         st.session_state.msg_input = ""
 
@@ -64,11 +67,11 @@ with tab2:
             url_msg = f"{BASE_URL}/storage/v1/object/mensajes/{msg_filename}"
             headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
             requests.post(url_msg, headers=headers, data=msg.encode('utf-8'))
-            st.session_state.msg_input = "" # Limpiamos
+            st.session_state.msg_input = ""
 
     st.text_input("Escribe algo para la banda:", key="msg_input", on_change=enviar_mensaje)
     
-    if st.button("Enviar mensaje"):
+    if st.button("Enviar"):
         enviar_mensaje()
         st.rerun()
 
@@ -90,7 +93,7 @@ with tab3:
     
     if res_list.status_code == 200:
         for f in reversed(res_list.json()):
-            nombre_mostrar = f['name'].split('_', 1)[-1].replace('_', ' ')
+            nombre_mostrar = f['name'].split('_', 1)[-1].replace('.wav', '').replace('_', ' ')
             file_url = f"{BASE_URL}/storage/v1/object/public/audios/{f['name']}"
             with st.expander(f"🎵 {nombre_mostrar}"):
                 st.audio(file_url)
