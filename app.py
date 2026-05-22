@@ -31,10 +31,11 @@ tab1, tab2, tab3 = st.tabs(["🎙️ Subir Idea", "💬 Muro de Control", "🎧 
 # --- TAB 1: SUBIR IDEA ---
 with tab1:
     st.subheader("Capturar idea")
-    comentario = st.text_input("Etiqueta (ej. Riff nuevo, Bajo):")
+    # Instrucción clave para usuarios de iPhone/Android
+    st.info("💡 **Tip:** Si no ves opción de grabar, usa la app de 'Notas de voz' de tu celular, guarda el archivo y súbelo aquí.")
     
-    # Al tocar aquí, el celular ofrece la opción de grabar voz directamente
-    archivo = st.file_uploader("Presiona aquí para grabar o subir un archivo", type=["mp3", "wav"])
+    comentario = st.text_input("Etiqueta (ej. Riff nuevo, Bajo):")
+    archivo = st.file_uploader("Selecciona tu archivo de audio (MP3/WAV)", type=["mp3", "wav"])
     
     if archivo and st.button("Publicar en la banda"):
         prefijo = comentario.replace(' ', '_') if comentario else "Idea"
