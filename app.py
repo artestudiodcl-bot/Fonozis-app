@@ -3,10 +3,11 @@ import requests
 from datetime import datetime
 
 # --- CONFIGURACIÓN ---
-PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
+PROJECT_ID = "yzwwstvzqjtaaoqxbwtz"
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
-st.set_page_config(page_title="Fonozis", page_icon="logo_app.png")
+SUPABASE_KEY = "TU_CLAVE_ANON"  # <--- PEGA TU CLAVE AQUÍ
+
+st.set_page_config(page_title="Fonozis", page_icon="🎸")
 
 # --- LOGIN SIMBÓLICO ---
 if "usuario" not in st.session_state:
@@ -17,7 +18,7 @@ if "usuario" not in st.session_state:
         st.rerun()
     st.stop()
 
-# --- CSS ESTILO IMESSAGE Y LAYOUT ---
+# --- CSS ESTILO IMESSAGE ---
 st.markdown("""
     <style>
     .chat-bubble-me { background-color: #007AFF; color: white; padding: 10px 15px; border-radius: 18px; margin: 5px 0; width: fit-content; margin-left: auto; text-align: right; }
@@ -27,18 +28,16 @@ st.markdown("""
 
 st.title(f"🎸 Fonozis | {st.session_state.usuario}")
 
-# --- ALERTAS DE NOVEDADES ---
-res_check = requests.post(f"{BASE_URL}/storage/v1/object/list/audios", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
-if res_check.status_code == 200:
-    cantidad = len(res_check.json())
-    if cantidad > 0:
-        st.sidebar.info(f"🎵 Ideas en biblioteca: {cantidad}")
-
-tab1, tab2, tab3 = st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])
-
 # --- TAB 1: SUBIR IDEA ---
-with tab1:
-    archivo = st.file_uploader("Selecciona o graba tu idea", type=["mp3", "wav", "m4a"])
+with st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])[0]:
+    st.subheader("Capturar Idea")
+    # El parámetro capture="microphone" fuerza la apertura de la grabadora en móviles
+    archivo = st.file_uploader(
+        "Presiona aquí para grabar o subir audio", 
+        type=["wav", "mp3", "m4a"],
+        accept_multiple_files=False
+    )
+    
     etiqueta = st.text_input("Nombre de la idea:")
     
     if archivo and etiqueta and st.button("Publicar en la banda"):
@@ -49,11 +48,11 @@ with tab1:
         with st.spinner('Publicando...'):
             res = requests.post(url_subida, headers=headers, data=archivo.getvalue())
         if res.status_code == 200:
-            st.success("¡Idea publicada!")
+            st.success("¡Idea guardada!")
             st.rerun()
 
 # --- TAB 2: MURO ---
-with tab2:
+with st.tabs(["", "💬 Muro", ""])[1]:
     if "msg_input" not in st.session_state: st.session_state.msg_input = ""
 
     def enviar_mensaje():
@@ -77,7 +76,7 @@ with tab2:
                 st.markdown(f'<div class="{clase}">{text} <br><small style="font-size:9px; opacity:0.6;">{user}</small></div>', unsafe_allow_html=True)
 
 # --- TAB 3: AUDIOS ---
-with tab3:
+with st.tabs(["", "", "🎧 Audios"])[2]:
     if st.button("Actualizar lista"): st.rerun()
     res_list = requests.post(f"{BASE_URL}/storage/v1/object/list/audios", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
     if res_list.status_code == 200:
