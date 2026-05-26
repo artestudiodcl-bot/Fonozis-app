@@ -27,15 +27,24 @@ st.markdown("""
 
 st.title(f"🎸 Fonozis | {st.session_state.usuario}")
 
+# --- TABS ---
+tab1, tab2, tab3 = st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])
+
 # --- TAB 1: SUBIR IDEA ---
-with st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])[0]:
+with tab1:
     st.subheader("Capturar Idea")
-    # El parámetro capture="microphone" fuerza la apertura de la grabadora en móviles
     archivo = st.file_uploader(
-        "Presiona aquí para grabar o subir audio", 
+        "Toca aquí para grabar o subir", 
         type=["wav", "mp3", "m4a"],
         accept_multiple_files=False
     )
+    
+    # JavaScript para forzar el micrófono en móviles
+    st.markdown("""
+        <script>
+            document.querySelector('input[type="file"]').setAttribute('capture', 'microphone');
+        </script>
+    """, unsafe_allow_html=True)
     
     etiqueta = st.text_input("Nombre de la idea:")
     
@@ -51,7 +60,7 @@ with st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])[0]:
             st.rerun()
 
 # --- TAB 2: MURO ---
-with st.tabs(["", "💬 Muro", ""])[1]:
+with tab2:
     if "msg_input" not in st.session_state: st.session_state.msg_input = ""
 
     def enviar_mensaje():
@@ -75,7 +84,7 @@ with st.tabs(["", "💬 Muro", ""])[1]:
                 st.markdown(f'<div class="{clase}">{text} <br><small style="font-size:9px; opacity:0.6;">{user}</small></div>', unsafe_allow_html=True)
 
 # --- TAB 3: AUDIOS ---
-with st.tabs(["", "", "🎧 Audios"])[2]:
+with tab3:
     if st.button("Actualizar lista"): st.rerun()
     res_list = requests.post(f"{BASE_URL}/storage/v1/object/list/audios", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
     if res_list.status_code == 200:
