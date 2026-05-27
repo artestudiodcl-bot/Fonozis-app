@@ -1,3 +1,4 @@
 streamlit
 requests
 streamlit-mic-recorder
+pip install streamlit requests streamlit-mic-recorder
