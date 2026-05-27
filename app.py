@@ -107,12 +107,17 @@ with tab1:
 
     st.subheader("🎙️ Grabar idea")
 
+    # Reiniciar grabador automáticamente
+    if "audio_key" not in st.session_state:
+        st.session_state.audio_key = 0
+
     etiqueta = st.text_input(
         "Nombre de la idea"
     )
 
     audio = st.audio_input(
-        "🎤 Grabar idea"
+        "🎤 Grabar idea",
+        key=f"audio_{st.session_state.audio_key}"
     )
 
     if audio and etiqueta:
@@ -140,11 +145,13 @@ with tab1:
                     data=audio.read()
                 )
 
-            st.write(response.status_code)
-
             if response.status_code in [200, 201]:
 
                 st.success("✅ Idea publicada")
+
+                # Limpiar grabador
+                st.session_state.audio_key += 1
+
                 st.rerun()
 
             else:
