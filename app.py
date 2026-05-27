@@ -7,7 +7,7 @@ from datetime import datetime
 # CONFIG SUPABASE
 # ======================================================
 
-PROJECT_ID = "yzwwstvzqjtaaoqxbwtz"
+PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 
