@@ -2,24 +2,35 @@ import streamlit as st
 import requests
 import os
 from datetime import datetime
-from streamlit_mic_recorder import mic_recorder
 
-# ---------------- CONFIG ----------------
+# ======================================================
+# CONFIG SUPABASE
+# ======================================================
 
-PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
+PROJECT_ID = "yzwwstvzqjtaaoqxbwtz"
 
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
+SUPABASE_KEY = "TU_SUPABASE_KEY"
 
 HEADERS = {
     "Authorization": f"Bearer {SUPABASE_KEY}",
     "apikey": SUPABASE_KEY
 }
 
-st.set_page_config(page_title="Fonozis", page_icon="🎸")
+# ======================================================
+# PAGE CONFIG
+# ======================================================
 
-# ---------------- LOGIN ----------------
+st.set_page_config(
+    page_title="Fonozis",
+    page_icon="🎸",
+    layout="centered"
+)
+
+# ======================================================
+# LOGIN SIMPLE
+# ======================================================
 
 if "usuario" not in st.session_state:
 
@@ -36,13 +47,18 @@ if "usuario" not in st.session_state:
         ]
     )
 
-    if st.button("Entrar") and nombre != "Selecciona":
-        st.session_state.usuario = nombre
-        st.rerun()
+    if st.button("Entrar"):
+
+        if nombre != "Selecciona":
+
+            st.session_state.usuario = nombre
+            st.rerun()
 
     st.stop()
 
-# ---------------- ESTILO ----------------
+# ======================================================
+# CSS
+# ======================================================
 
 st.markdown("""
 <style>
@@ -73,7 +89,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- HEADER ----------------
+# ======================================================
+# HEADER
+# ======================================================
 
 st.title(f"🎸 Fonozis | {st.session_state.usuario}")
 
@@ -81,66 +99,65 @@ tab1, tab2, tab3 = st.tabs(
     ["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"]
 )
 
-# =========================================================
-# TAB 1
-# =========================================================
+# ======================================================
+# TAB 1 - SUBIR AUDIO
+# ======================================================
 
 with tab1:
 
     st.subheader("🎙️ Grabar idea")
 
-    etiqueta = st.text_input("Nombre de la idea")
-
-    audio = mic_recorder(
-        start_prompt="🎤 Iniciar grabación",
-        stop_prompt="⏹️ Detener",
-        just_once=True,
-        use_container_width=True
+    etiqueta = st.text_input(
+        "Nombre de la idea"
     )
 
-    if audio:
+    audio = st.audio_input(
+        "🎤 Grabar idea"
+    )
 
-        st.audio(audio["bytes"])
+    if audio and etiqueta:
 
-        if etiqueta:
+        st.audio(audio)
 
-            if st.button("Publicar idea"):
+        if st.button("Publicar idea"):
 
-                filename = (
-                    f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
-                    f"_{st.session_state.usuario}"
-                    f"_{etiqueta.replace(' ', '_')}.wav"
+            filename = (
+                f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                f"_{st.session_state.usuario}"
+                f"_{etiqueta.replace(' ', '_')}.m4a"
+            )
+
+            upload_headers = {
+                **HEADERS,
+                "Content-Type": "audio/mp4"
+            }
+
+            with st.spinner("Subiendo audio..."):
+
+                response = requests.post(
+                    f"{BASE_URL}/storage/v1/object/audios/{filename}",
+                    headers=upload_headers,
+                    data=audio.read()
                 )
 
-                upload_headers = {
-                    **HEADERS,
-                    "Content-Type": "audio/wav"
-                }
+            st.write(response.status_code)
 
-                with st.spinner("Subiendo audio..."):
+            if response.status_code in [200, 201]:
 
-                    response = requests.post(
-                        f"{BASE_URL}/storage/v1/object/audios/{filename}",
-                        headers=upload_headers,
-                        data=audio["bytes"]
-                    )
+                st.success("✅ Idea publicada")
+                st.rerun()
 
-                if response.status_code in [200, 201]:
+            else:
 
-                    st.success("✅ Idea publicada")
-                    st.rerun()
+                st.error(response.text)
 
-                else:
-
-                    st.error(f"Error: {response.text}")
-
-# =========================================================
-# TAB 2
-# =========================================================
+# ======================================================
+# TAB 2 - CHAT
+# ======================================================
 
 with tab2:
 
-    st.subheader("💬 Muro de mensajes")
+    st.subheader("💬 Muro")
 
     if "msg_input" not in st.session_state:
         st.session_state.msg_input = ""
@@ -173,7 +190,7 @@ with tab2:
             st.session_state.msg_input = ""
 
     st.text_input(
-        "Escribe algo",
+        "Escribe un mensaje",
         key="msg_input",
         on_change=enviar_mensaje
     )
@@ -214,7 +231,7 @@ with tab2:
                 )
 
                 st.markdown(
-                    f'''
+                    f"""
                     <div class="{clase}">
                         {texto}
                         <br>
@@ -222,13 +239,13 @@ with tab2:
                             {usuario}
                         </small>
                     </div>
-                    ''',
+                    """,
                     unsafe_allow_html=True
                 )
 
-# =========================================================
-# TAB 3
-# =========================================================
+# ======================================================
+# TAB 3 - AUDIOS
+# ======================================================
 
 with tab3:
 
@@ -245,15 +262,19 @@ with tab3:
 
     if response.status_code == 200:
 
-        archivos = reversed(response.json())
+        archivos = sorted(
+            response.json(),
+            key=lambda x: x["name"],
+            reverse=True
+        )
 
         for f in archivos:
 
-            nombre_archivo = os.path.splitext(
+            nombre_archivo = (
                 f["name"]
-            )[0]
-
-            nombre_archivo = nombre_archivo.replace("_", " ")
+                .replace(".m4a", "")
+                .replace("_", " ")
+            )
 
             file_url = (
                 f"{BASE_URL}/storage/v1/object/public/"
@@ -262,9 +283,14 @@ with tab3:
 
             with st.expander(f"🎵 {nombre_archivo}"):
 
-                st.audio(file_url)
+                st.audio(
+                    file_url,
+                    format="audio/mp4"
+                )
 
-# ---------------- SIDEBAR ----------------
+# ======================================================
+# SIDEBAR
+# ======================================================
 
 st.sidebar.markdown("---")
 
