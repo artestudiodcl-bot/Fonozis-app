@@ -95,8 +95,8 @@ st.markdown("""
 
 st.title(f"🎸 Fonozis | {st.session_state.usuario}")
 
-tab1, tab2, tab3 = st.tabs(
-    ["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"]
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["🎙️ Subir Idea", "💬 Muro", "🎧 Audios", "📅 Fechas"]
 )
 
 # ======================================================
@@ -294,6 +294,111 @@ with tab3:
                     file_url,
                     format="audio/mp4"
                 )
+
+# ======================================================
+# TAB 4 - CALENDARIO
+# ======================================================
+
+with tab4:
+
+    st.subheader("📅 Fechas de la banda")
+
+    st.markdown("### Agregar nueva fecha")
+
+    fecha = st.date_input("Fecha")
+
+    hora = st.time_input("Hora")
+
+    titulo = st.text_input("Evento")
+
+    lugar = st.text_input("Lugar")
+
+    if st.button("Guardar fecha"):
+
+        contenido = (
+            f"{fecha}|{hora}|{titulo}|{lugar}|"
+            f"{st.session_state.usuario}"
+        )
+
+        filename = (
+            f"fecha_"
+            f"{datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
+        )
+
+        response = requests.post(
+            f"{BASE_URL}/storage/v1/object/fechas/{filename}",
+            headers={
+                **HEADERS,
+                "Content-Type": "text/plain"
+            },
+            data=contenido.encode("utf-8")
+        )
+
+        if response.status_code in [200, 201]:
+
+            st.success("✅ Fecha guardada")
+            st.rerun()
+
+        else:
+
+            st.error(response.text)
+
+    st.markdown("---")
+
+    st.markdown("## 📌 Próximas fechas")
+
+    response = requests.post(
+        f"{BASE_URL}/storage/v1/object/list/fechas",
+        headers=HEADERS,
+        json={"prefix": ""}
+    )
+
+    if response.status_code == 200:
+
+        fechas = sorted(
+            response.json(),
+            key=lambda x: x["name"],
+            reverse=True
+        )
+
+        for f in fechas:
+
+            archivo_url = (
+                f"{BASE_URL}/storage/v1/object/public/"
+                f"fechas/{f['name']}"
+            )
+
+            contenido = requests.get(
+                archivo_url
+            ).text
+
+            datos = contenido.split("|")
+
+            if len(datos) >= 5:
+
+                fecha_txt = datos[0]
+                hora_txt = datos[1]
+                titulo_txt = datos[2]
+                lugar_txt = datos[3]
+                usuario_txt = datos[4]
+
+                with st.container():
+
+                    st.markdown(
+                        f"""
+                        ### 🎸 {titulo_txt}
+
+                        📅 **Fecha:** {fecha_txt}
+
+                        🕒 **Hora:** {hora_txt}
+
+                        📍 **Lugar:** {lugar_txt}
+
+                        👤 Agregado por: {usuario_txt}
+
+                        ---
+                        """
+                    )
 
 # ======================================================
 # SIDEBAR
