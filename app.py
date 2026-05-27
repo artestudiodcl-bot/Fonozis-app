@@ -6,7 +6,7 @@ from streamlit_mic_recorder import mic_recorder
 
 # ---------------- CONFIG ----------------
 
-PROJECT_ID = "hUqsi8-zomxet-zynfof"
+PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 
