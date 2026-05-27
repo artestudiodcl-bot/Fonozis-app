@@ -1,99 +1,274 @@
 import streamlit as st
 import requests
+import os
 from datetime import datetime
+from streamlit_mic_recorder import mic_recorder
 
-# --- CONFIGURACIÓN ---
-PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
+# ---------------- CONFIG ----------------
+
+PROJECT_ID = "hUqsi8-zomxet-zynfof"
+
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
+
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
+
+HEADERS = {
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "apikey": SUPABASE_KEY
+}
+
 st.set_page_config(page_title="Fonozis", page_icon="🎸")
 
-# --- LOGIN SIMBÓLICO ---
+# ---------------- LOGIN ----------------
+
 if "usuario" not in st.session_state:
-    st.title("🎸 Fonozis: Identifícate")
-    nombre = st.selectbox("¿Quién eres?", ["Elige tu nombre", "Noe (Bajo)", "Gaston (Guitarra)", "Ana (Voz)", "Carlos (Batería)"])
-    if st.button("Entrar") and nombre != "Elige tu nombre":
+
+    st.title("🎸 Fonozis")
+
+    nombre = st.selectbox(
+        "¿Quién eres?",
+        [
+            "Selecciona",
+            "Noe (Bajo)",
+            "Gaston (Guitarra)",
+            "Ana (Voz)",
+            "Carlos (Batería)"
+        ]
+    )
+
+    if st.button("Entrar") and nombre != "Selecciona":
         st.session_state.usuario = nombre
         st.rerun()
+
     st.stop()
 
-# --- CSS ESTILO IMESSAGE ---
+# ---------------- ESTILO ----------------
+
 st.markdown("""
-    <style>
-    .chat-bubble-me { background-color: #007AFF; color: white; padding: 10px 15px; border-radius: 18px; margin: 5px 0; width: fit-content; margin-left: auto; text-align: right; }
-    .chat-bubble-other { background-color: #E9E9EB; color: black; padding: 10px 15px; border-radius: 18px; margin: 5px 0; width: fit-content; text-align: left; }
-    </style>
+<style>
+
+.chat-bubble-me {
+    background-color: #007AFF;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 18px;
+    margin: 8px 0;
+    width: fit-content;
+    margin-left: auto;
+    text-align: right;
+    max-width: 80%;
+}
+
+.chat-bubble-other {
+    background-color: #E9E9EB;
+    color: black;
+    padding: 10px 15px;
+    border-radius: 18px;
+    margin: 8px 0;
+    width: fit-content;
+    text-align: left;
+    max-width: 80%;
+}
+
+</style>
 """, unsafe_allow_html=True)
+
+# ---------------- HEADER ----------------
 
 st.title(f"🎸 Fonozis | {st.session_state.usuario}")
 
-# --- TABS ---
-tab1, tab2, tab3 = st.tabs(["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"])
+tab1, tab2, tab3 = st.tabs(
+    ["🎙️ Subir Idea", "💬 Muro", "🎧 Audios"]
+)
 
-# --- TAB 1: SUBIR IDEA ---
+# =========================================================
+# TAB 1
+# =========================================================
+
 with tab1:
-    st.subheader("Capturar Idea")
-    archivo = st.file_uploader(
-        "Toca aquí para grabar o subir", 
-        type=["wav", "mp3", "m4a"],
-        accept_multiple_files=False
-    )
-    
-    # JavaScript para forzar el micrófono en móviles
-    st.markdown("""
-        <script>
-            document.querySelector('input[type="file"]').setAttribute('capture', 'microphone');
-        </script>
-    """, unsafe_allow_html=True)
-    
-    etiqueta = st.text_input("Nombre de la idea:")
-    
-    if archivo and etiqueta and st.button("Publicar en la banda"):
-        filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}_{etiqueta.replace(' ', '_')}.mp3"
-        url_subida = f"{BASE_URL}/storage/v1/object/audios/{filename}"
-        headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
-        
-        with st.spinner('Publicando...'):
-            res = requests.post(url_subida, headers=headers, data=archivo.getvalue())
-        if res.status_code == 200:
-            st.success("¡Idea guardada!")
-            st.rerun()
 
-# --- TAB 2: MURO ---
+    st.subheader("🎙️ Grabar idea")
+
+    etiqueta = st.text_input("Nombre de la idea")
+
+    audio = mic_recorder(
+        start_prompt="🎤 Iniciar grabación",
+        stop_prompt="⏹️ Detener",
+        just_once=True,
+        use_container_width=True
+    )
+
+    if audio:
+
+        st.audio(audio["bytes"])
+
+        if etiqueta:
+
+            if st.button("Publicar idea"):
+
+                filename = (
+                    f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                    f"_{st.session_state.usuario}"
+                    f"_{etiqueta.replace(' ', '_')}.wav"
+                )
+
+                upload_headers = {
+                    **HEADERS,
+                    "Content-Type": "audio/wav"
+                }
+
+                with st.spinner("Subiendo audio..."):
+
+                    response = requests.post(
+                        f"{BASE_URL}/storage/v1/object/audios/{filename}",
+                        headers=upload_headers,
+                        data=audio["bytes"]
+                    )
+
+                if response.status_code in [200, 201]:
+
+                    st.success("✅ Idea publicada")
+                    st.rerun()
+
+                else:
+
+                    st.error(f"Error: {response.text}")
+
+# =========================================================
+# TAB 2
+# =========================================================
+
 with tab2:
-    if "msg_input" not in st.session_state: st.session_state.msg_input = ""
+
+    st.subheader("💬 Muro de mensajes")
+
+    if "msg_input" not in st.session_state:
+        st.session_state.msg_input = ""
 
     def enviar_mensaje():
-        if st.session_state.msg_input:
-            msg_filename = f"msg_{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}.txt"
-            content = f"{st.session_state.usuario}|{st.session_state.msg_input}"
-            requests.post(f"{BASE_URL}/storage/v1/object/mensajes/{msg_filename}", 
-                          headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, 
-                          data=content.encode('utf-8'))
+
+        texto = st.session_state.msg_input
+
+        if texto.strip():
+
+            filename = (
+                f"msg_"
+                f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                f"_{st.session_state.usuario}.txt"
+            )
+
+            contenido = (
+                f"{st.session_state.usuario}|{texto}"
+            )
+
+            requests.post(
+                f"{BASE_URL}/storage/v1/object/mensajes/{filename}",
+                headers={
+                    **HEADERS,
+                    "Content-Type": "text/plain"
+                },
+                data=contenido.encode("utf-8")
+            )
+
             st.session_state.msg_input = ""
 
-    st.text_input("Escribe un mensaje:", key="msg_input", on_change=enviar_mensaje)
+    st.text_input(
+        "Escribe algo",
+        key="msg_input",
+        on_change=enviar_mensaje
+    )
 
-    res_list_msg = requests.post(f"{BASE_URL}/storage/v1/object/list/mensajes", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
-    if res_list_msg.status_code == 200:
-        for m in sorted(res_list_msg.json(), key=lambda x: x['name'], reverse=True):
-            raw_content = requests.get(f"{BASE_URL}/storage/v1/object/public/mensajes/{m['name']}", headers={"apikey": SUPABASE_KEY}).text
-            if "|" in raw_content:
-                user, text = raw_content.split("|", 1)
-                clase = "chat-bubble-me" if user == st.session_state.usuario else "chat-bubble-other"
-                st.markdown(f'<div class="{clase}">{text} <br><small style="font-size:9px; opacity:0.6;">{user}</small></div>', unsafe_allow_html=True)
+    response = requests.post(
+        f"{BASE_URL}/storage/v1/object/list/mensajes",
+        headers=HEADERS,
+        json={"prefix": ""}
+    )
 
-# --- TAB 3: AUDIOS ---
+    if response.status_code == 200:
+
+        mensajes = sorted(
+            response.json(),
+            key=lambda x: x["name"],
+            reverse=True
+        )
+
+        for m in mensajes:
+
+            archivo_url = (
+                f"{BASE_URL}/storage/v1/object/public/"
+                f"mensajes/{m['name']}"
+            )
+
+            contenido = requests.get(
+                archivo_url
+            ).text
+
+            if "|" in contenido:
+
+                usuario, texto = contenido.split("|", 1)
+
+                clase = (
+                    "chat-bubble-me"
+                    if usuario == st.session_state.usuario
+                    else "chat-bubble-other"
+                )
+
+                st.markdown(
+                    f'''
+                    <div class="{clase}">
+                        {texto}
+                        <br>
+                        <small style="opacity:0.6;">
+                            {usuario}
+                        </small>
+                    </div>
+                    ''',
+                    unsafe_allow_html=True
+                )
+
+# =========================================================
+# TAB 3
+# =========================================================
+
 with tab3:
-    if st.button("Actualizar lista"): st.rerun()
-    res_list = requests.post(f"{BASE_URL}/storage/v1/object/list/audios", headers={"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}, json={"prefix": ""})
-    if res_list.status_code == 200:
-        for f in reversed(res_list.json()):
-            nombre_archivo = f['name'].split('_', 1)[-1].replace('.mp3', '')
-            file_url = f"{BASE_URL}/storage/v1/object/public/audios/{f['name']}"
-            with st.expander(f"🎵 {nombre_archivo.replace('_', ' ')}"):
+
+    st.subheader("🎧 Ideas de la banda")
+
+    if st.button("🔄 Actualizar"):
+        st.rerun()
+
+    response = requests.post(
+        f"{BASE_URL}/storage/v1/object/list/audios",
+        headers=HEADERS,
+        json={"prefix": ""}
+    )
+
+    if response.status_code == 200:
+
+        archivos = reversed(response.json())
+
+        for f in archivos:
+
+            nombre_archivo = os.path.splitext(
+                f["name"]
+            )[0]
+
+            nombre_archivo = nombre_archivo.replace("_", " ")
+
+            file_url = (
+                f"{BASE_URL}/storage/v1/object/public/"
+                f"audios/{f['name']}"
+            )
+
+            with st.expander(f"🎵 {nombre_archivo}"):
+
                 st.audio(file_url)
 
+# ---------------- SIDEBAR ----------------
+
+st.sidebar.markdown("---")
+
 if st.sidebar.button("Cerrar sesión"):
+
     del st.session_state.usuario
     st.rerun()
