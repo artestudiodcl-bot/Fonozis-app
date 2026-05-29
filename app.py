@@ -23,8 +23,8 @@ HEADERS = {
 # ======================================================
 
 st.set_page_config(
-    page_title="jamct",
-    page_icon="🎸",
+    page_title="Fonozis",
+    page_icon="logo.png",
     layout="centered"
 )
 st.markdown("""
