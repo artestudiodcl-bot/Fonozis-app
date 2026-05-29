@@ -27,6 +27,11 @@ st.set_page_config(
     page_icon="🎸",
     layout="centered"
 )
+st.markdown("""
+### Bienvenido a Fonozis
+
+Guarda ideas, organiza fechas y comparte demos con tu banda en un solo lugar.
+""")
 
 # ======================================================
 # LOGIN SIMPLE
