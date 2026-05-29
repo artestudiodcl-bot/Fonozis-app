@@ -6,7 +6,7 @@ from datetime import datetime
 # --- LOGIN MEJORADO ---
 if "banda" not in st.session_state:
     st.title("🎸 Acceso a Jam")
-    banda = st.text_input("Nombre de tu banda (Ej: LosRockeros):").strip().lower()
+    BANDA = st.session_state.banda
     usuario = st.text_input("Tu nombre:")
     if st.button("Entrar") and banda and usuario:
         st.session_state.banda = banda
