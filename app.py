@@ -125,6 +125,10 @@ tab1, tab2, tab3, tab4 = st.tabs(
 
 with tab1:
 
+carpeta_banda = st.session_state.banda
+filename = f"{carpeta_banda}/{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}_{etiqueta.replace(' ', '_')}.mp3"
+url_subida = f"{BASE_URL}/storage/v1/object/audios/{filename}"
+
     st.subheader("🎙️ Grabar idea")
 
     # Reiniciar grabador automáticamente
@@ -183,6 +187,9 @@ with tab1:
 # ======================================================
 
 with tab2:
+
+msg_filename = f"{st.session_state.banda}/msg_{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}.txt"
+# ... el resto de tu código de envío ...
 
     st.subheader("💬 Muro")
 
@@ -275,6 +282,12 @@ with tab2:
 # ======================================================
 
 with tab3:
+
+# Para mensajes:
+json={"prefix": st.session_state.banda}
+
+# Para audios:
+json={"prefix": st.session_state.banda}
 
     st.subheader("🎧 Ideas de la banda")
 
