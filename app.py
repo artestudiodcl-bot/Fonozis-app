@@ -135,7 +135,6 @@ with tab1:
 # ======================================================
 # TAB 2 - CHAT
 # ======================================================
-
 with tab2:
 
     st.subheader("💬 Muro de la banda")
@@ -147,7 +146,7 @@ with tab2:
         if texto.strip():
 
             filename = (
-                f"msg_{datetime.now().strftime('%Y%m%d%H%M%S')}_{USUARIO}.txt"
+                f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{USUARIO}.txt"
             )
 
             path = f"mensajes/{BANDA}/{filename}"
@@ -168,15 +167,20 @@ with tab2:
         on_change=enviar_mensaje
     )
 
+    # ✅ LISTAR CORRECTAMENTE
     response = requests.post(
-        f"{BASE_URL}/storage/v1/object/list/mensajes/{BANDA}",
+        f"{BASE_URL}/storage/v1/object/list/mensajes",
         headers=HEADERS,
         json={"prefix": f"mensajes/{BANDA}/"}
     )
 
     if response.status_code == 200:
 
-        mensajes = sorted(response.json(), key=lambda x: x["name"], reverse=True)
+        mensajes = sorted(
+            response.json(),
+            key=lambda x: x["name"],
+            reverse=False
+        )
 
         for m in mensajes:
 
@@ -185,17 +189,22 @@ with tab2:
             contenido = requests.get(url).text
 
             if "|" in contenido:
-                user, text = contenido.split("|", 1)
 
-                style = "chat-bubble-me" if user == USUARIO else "chat-bubble-other"
+                usuario, texto = contenido.split("|", 1)
+
+                clase = (
+                    "chat-bubble-me"
+                    if usuario == USUARIO
+                    else "chat-bubble-other"
+                )
 
                 st.markdown(f"""
-                <div class="{style}">
-                    {text}<br>
-                    <small>{user}</small>
+                <div class="{clase}">
+                    {texto}
+                    <br>
+                    <small>{usuario}</small>
                 </div>
                 """, unsafe_allow_html=True)
-
 # ======================================================
 # TAB 3 - AUDIOS
 # ======================================================
