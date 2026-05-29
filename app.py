@@ -184,9 +184,6 @@ with tab1:
 
 with tab2:
 
-msg_filename = f"{st.session_state.banda}/msg_{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}.txt"
-# ... el resto de tu código de envío ...
-
     st.subheader("💬 Muro")
 
     if "msg_input" not in st.session_state:
