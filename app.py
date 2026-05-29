@@ -20,17 +20,59 @@ HEADERS = {
 # LOGIN (BANDA + USUARIO)
 # ======================================================
 
-if "banda" not in st.session_state or "usuario" not in st.session_state:
+# ======================================================
+# BANDAS Y CONTRASEÑAS
+# ======================================================
+
+BANDAS = {
+    "metallica": "1234",
+    "nirvana": "abc123",
+    "blink182": "punkrock"
+}
+
+# ======================================================
+# LOGIN
+# ======================================================
+
+if "banda" not in st.session_state:
 
     st.title("🎸 Acceso a Jam")
 
-    banda = st.text_input("Nombre de tu banda (Ej: LosRockeros):").strip().lower()
-    usuario = st.text_input("Tu nombre:")
+    banda = st.text_input(
+        "Nombre de la banda"
+    ).strip().lower()
 
-    if st.button("Entrar") and banda and usuario:
-        st.session_state.banda = banda.replace(" ", "_")
-        st.session_state.usuario = usuario
-        st.rerun()
+    password = st.text_input(
+        "Contraseña",
+        type="password"
+    )
+
+    usuario = st.text_input(
+        "Tu nombre"
+    )
+
+    if st.button("Entrar"):
+
+        # validar banda
+        if banda in BANDAS:
+
+            # validar password
+            if BANDAS[banda] == password:
+
+                st.session_state.banda = banda
+                st.session_state.usuario = usuario
+
+                st.success("✅ Acceso permitido")
+
+                st.rerun()
+
+            else:
+
+                st.error("❌ Contraseña incorrecta")
+
+        else:
+
+            st.error("❌ Banda no encontrada")
 
     st.stop()
 
