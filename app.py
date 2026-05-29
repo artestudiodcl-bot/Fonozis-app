@@ -229,39 +229,49 @@ with tab2:
 
     st.subheader("💬 Muro de la banda")
 
-    # ==================================================
-    # ENVIAR MENSAJE
-    # ==================================================
+def send_message():
 
-    def enviar_mensaje():
+    text = st.session_state.msg
 
-        texto = st.session_state.msg_input
+    if text:
 
-        if texto.strip():
+        requests.post(
+            f"{BASE_URL}/rest/v1/messages",
+            headers=HEADERS,
+            json={
+                "band_id": st.session_state.band_id,
+                "user_name": st.session_state.user_name,
+                "message": text
+            }
+        )
 
-            filename = (
-                f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{USUARIO}.txt"
-            )
+        st.session_state.msg = ""
 
-            # ✅ carpeta interna del bucket
-            path = f"{BANDA}/{filename}"
+st.text_input("Escribe mensaje", key="msg", on_change=send_message)
 
-            contenido = f"{USUARIO}|{texto}"
+# =========================
+# LOAD MESSAGES
+# =========================
 
-            response = requests.post(
-                f"{BASE_URL}/storage/v1/object/mensajes/{path}",
-                headers={
-                    **HEADERS,
-                    "Content-Type": "text/plain"
-                },
-                data=contenido.encode("utf-8")
-            )
+res = requests.post(
+    f"{BASE_URL}/rest/v1/messages?select=*",
+    headers=HEADERS,
+    json={}
+)
 
-            if response.status_code not in [200, 201]:
-                st.error(response.text)
+messages = res.json() if res.status_code == 200 else []
 
-            st.session_state.msg_input = ""
+messages = [
+    m for m in messages
+    if m.get("band_id") == st.session_state.band_id
+]
 
+for m in sorted(messages, key=lambda x: x["created_at"]):
+
+    if m["user_name"] == st.session_state.user_name:
+        st.markdown(f"**🟦 Tú:** {m['message']}")
+    else:
+        st.markdown(f"**{m['user_name']}:** {m['message']}")
     # ==================================================
     # INPUT
     # ==================================================
