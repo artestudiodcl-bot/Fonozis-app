@@ -125,10 +125,6 @@ tab1, tab2, tab3, tab4 = st.tabs(
 
 with tab1:
 
-carpeta_banda = st.session_state.banda
-filename = f"{carpeta_banda}/{datetime.now().strftime('%Y%m%d%H%M%S')}_{st.session_state.usuario}_{etiqueta.replace(' ', '_')}.mp3"
-url_subida = f"{BASE_URL}/storage/v1/object/audios/{filename}"
-
     st.subheader("🎙️ Grabar idea")
 
     # Reiniciar grabador automáticamente
