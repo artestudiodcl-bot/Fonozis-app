@@ -97,9 +97,8 @@ st.markdown("""
 # HEADER
 # ======================================================
 
-st.image(IMG_2478.jpeg)
 
-st.title(f"Fonozis | {st.session_state.usuario}")
+st.title(f"Jam | {st.session_state.usuario}")
 
 st.caption("El espacio creativo para bandas")
 
