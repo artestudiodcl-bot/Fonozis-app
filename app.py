@@ -24,9 +24,6 @@ HEADERS = {
 
 st.set_page_config(
     page_title="Fonozis",
-    # Muestra el logo en grande y centrado dentro de la página
-st.image("IMG_2478.jpeg", width=200)
-
     page_icon="🎸",
     layout="centered"
 )
