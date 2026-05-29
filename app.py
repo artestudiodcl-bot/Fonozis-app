@@ -276,9 +276,6 @@ with tab2:
 
 with tab3:
 
-# Para audios:
-json={"prefix": st.session_state.banda}
-
     st.subheader("🎧 Ideas de la banda")
 
     if st.button("🔄 Actualizar"):
