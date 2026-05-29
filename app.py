@@ -100,6 +100,8 @@ st.markdown("""
 
 st.title(f"Jam | {st.session_state.usuario}")
 
+st.image("IMG_2478.jpeg", width=200)
+
 st.caption("El espacio creativo para bandas")
 
 tab1, tab2, tab3, tab4 = st.tabs(
