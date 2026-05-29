@@ -96,7 +96,11 @@ st.markdown("""
 # HEADER
 # ======================================================
 
-st.title(f"🎸 Fonozis | {st.session_state.usuario}")
+st.image(logo, width=180)
+
+st.title(f"Fonozis | {st.session_state.usuario}")
+
+st.caption("El espacio creativo para bandas")
 
 tab1, tab2, tab3, tab4 = st.tabs(
     ["🎙️ Subir Idea", "💬 Muro", "🎧 Audios", "📅 Fechas"]
