@@ -33,49 +33,49 @@ BANDAS = {
 # ======================================================
 # LOGIN
 # ======================================================
+# ======================================================
+# BANDAS Y CONTRASEÑAS
+# ======================================================
+
+BANDAS = {
+    "fonozis": "1234",
+    "rafa": "abc123"
+}
+
+# ======================================================
+# LOGIN
+# ======================================================
 
 if "banda" not in st.session_state:
 
     st.title("🎸 Acceso a Jam")
-    st.caption("Bandas disponibles: Fonozis, Rafa")
-    banda = st.text_input(
-        "Nombre de la banda"
-    ).strip().lower()
 
-    password = st.text_input(
-        "Contraseña",
-        type="password"
-    )
-
-    usuario = st.text_input(
-        "Tu nombre"
-    )
+    banda_input = st.text_input("Nombre de la banda")
+    password = st.text_input("Contraseña", type="password")
+    usuario = st.text_input("Tu nombre")
 
     if st.button("Entrar"):
 
-        # validar banda
+        # 🔥 NORMALIZACIÓN FUERTE
+        banda = banda_input.strip().lower().replace(" ", "")
+
         if banda in BANDAS:
 
-            # validar password
             if BANDAS[banda] == password:
 
                 st.session_state.banda = banda
                 st.session_state.usuario = usuario
 
                 st.success("✅ Acceso permitido")
-
                 st.rerun()
 
             else:
-
                 st.error("❌ Contraseña incorrecta")
 
         else:
-
-            st.error("❌ Banda no encontrada")
-
+            st.error(f"❌ Banda no encontrada: '{banda}'")
+    
     st.stop()
-
 # ======================================================
 # VARIABLES GLOBALES
 # ======================================================
