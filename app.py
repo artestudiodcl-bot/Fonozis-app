@@ -29,7 +29,7 @@ st.session_state.setdefault("usuario", None)
 if not st.session_state.banda:
 
     st.title("🎸 Jam - Acceso")
-
+    st.image("IMG_2478.jpeg", width=200)
     modo = st.radio("Modo", ["Unirse a banda", "Crear banda"])
 
     banda_input = st.text_input("Nombre de la banda")
