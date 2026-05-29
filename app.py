@@ -139,6 +139,10 @@ with tab2:
 
     st.subheader("💬 Muro de la banda")
 
+    # ==================================================
+    # ENVIAR MENSAJE
+    # ==================================================
+
     def enviar_mensaje():
 
         texto = st.session_state.msg_input
@@ -149,17 +153,28 @@ with tab2:
                 f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{USUARIO}.txt"
             )
 
-            path = f"mensajes/{BANDA}/{filename}"
+            # ✅ carpeta interna del bucket
+            path = f"{BANDA}/{filename}"
 
             contenido = f"{USUARIO}|{texto}"
 
-            requests.post(
-                f"{BASE_URL}/storage/v1/object/{path}",
-                headers={**HEADERS, "Content-Type": "text/plain"},
+            response = requests.post(
+                f"{BASE_URL}/storage/v1/object/mensajes/{path}",
+                headers={
+                    **HEADERS,
+                    "Content-Type": "text/plain"
+                },
                 data=contenido.encode("utf-8")
             )
 
+            if response.status_code not in [200, 201]:
+                st.error(response.text)
+
             st.session_state.msg_input = ""
+
+    # ==================================================
+    # INPUT
+    # ==================================================
 
     st.text_input(
         "Escribe un mensaje",
@@ -167,24 +182,35 @@ with tab2:
         on_change=enviar_mensaje
     )
 
-    # ✅ LISTAR CORRECTAMENTE
+    # ==================================================
+    # LISTAR MENSAJES
+    # ==================================================
+
     response = requests.post(
         f"{BASE_URL}/storage/v1/object/list/mensajes",
         headers=HEADERS,
-        json={"prefix": f"mensajes/{BANDA}/"}
+        json={
+            "prefix": f"{BANDA}/"
+        }
     )
 
     if response.status_code == 200:
 
         mensajes = sorted(
             response.json(),
-            key=lambda x: x["name"],
-            reverse=False
+            key=lambda x: x["name"]
         )
 
         for m in mensajes:
 
-            url = f"{BASE_URL}/storage/v1/object/public/mensajes/{BANDA}/{m['name']}"
+            # nombre real del archivo
+            archivo = m["name"]
+
+            # URL pública correcta
+            url = (
+                f"{BASE_URL}/storage/v1/object/public/"
+                f"mensajes/{BANDA}/{archivo}"
+            )
 
             contenido = requests.get(url).text
 
@@ -198,13 +224,20 @@ with tab2:
                     else "chat-bubble-other"
                 )
 
-                st.markdown(f"""
-                <div class="{clase}">
-                    {texto}
-                    <br>
-                    <small>{usuario}</small>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(
+                    f"""
+                    <div class="{clase}">
+                        {texto}
+                        <br>
+                        <small>{usuario}</small>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+    else:
+
+        st.error(response.text)
 # ======================================================
 # TAB 3 - AUDIOS
 # ======================================================
