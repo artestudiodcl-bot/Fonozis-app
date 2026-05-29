@@ -9,8 +9,7 @@ from datetime import datetime
 PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 
-SUPABASE_KEY = "TU_SUPABASE_KEY"
-
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6d3dzdHZycWp0YWFvcXhid3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTc2NTUsImV4cCI6MjA5NDg5MzY1NX0.XZJbD4TRwC0rAB3IabHYFbyN4fZ53i1gKpjGtImJjgg"
 HEADERS = {
     "Authorization": f"Bearer {SUPABASE_KEY}",
     "apikey": SUPABASE_KEY
