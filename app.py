@@ -249,27 +249,86 @@ with tab1:
         # MOSTRAR MENSAJES
         # -------------------------
 
-        for m in mensajes:
+        # ==========================================
+# CSS ESTILO IPHONE
+# ==========================================
 
-            usuario_msg = m["user_name"]
-            texto_msg = m["message"]
+st.markdown("""
+<style>
 
-            if usuario_msg == USUARIO:
+.chat-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-                st.markdown(
-                    f"🟦 **Tú:** {texto_msg}"
-                )
+.msg-me {
+    background: #007AFF;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 18px;
+    width: fit-content;
+    max-width: 75%;
+    margin-left: auto;
+    font-size: 16px;
+}
 
-            else:
+.msg-other {
+    background: #E9E9EB;
+    color: black;
+    padding: 10px 14px;
+    border-radius: 18px;
+    width: fit-content;
+    max-width: 75%;
+    margin-right: auto;
+    font-size: 16px;
+}
 
-                st.markdown(
-                    f"🟨 **{usuario_msg}:** {texto_msg}"
-                )
+.msg-name {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# MOSTRAR MENSAJES
+# ==========================================
+
+for m in mensajes:
+
+    usuario_msg = m["user_name"]
+    texto_msg = m["message"]
+
+    if usuario_msg == USUARIO:
+
+        st.markdown(
+            f"""
+            <div class="msg-me">
+                {texto_msg}
+                <div class="msg-name">
+                    Tú
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     else:
 
-        st.error(res.text)
-# ======================================================
+        st.markdown(
+            f"""
+            <div class="msg-other">
+                {texto_msg}
+                <div class="msg-name">
+                    {usuario_msg}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )# ======================================================
 # SUBIR AUDIO
 # ======================================================
 
