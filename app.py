@@ -4,38 +4,6 @@ from datetime import datetime
 st.session_state.setdefault("banda", None)
 st.session_state.setdefault("user_name", None)
 
-if not st.session_state.banda or not st.session_state.user_name:
-
-    st.title("🎸 Acceso a Jam")
-
-    banda_input = st.text_input("Nombre de la banda")
-    usuario_input = st.text_input("Tu nombre")
-    password_input = st.text_input("Contraseña", type="password")
-
-    BANDAS = {
-        "fonozis": "1234",
-        "rafa": "abc123"
-    }
-
-    if st.button("Entrar"):
-
-        banda = banda_input.strip().lower().replace(" ", "")
-        usuario = usuario_input.strip()
-
-        if banda not in BANDAS:
-            st.error("❌ Banda no encontrada")
-            st.stop()
-
-        if BANDAS[banda] != password_input:
-            st.error("❌ Contraseña incorrecta")
-            st.stop()
-
-        st.session_state.banda = banda
-        st.session_state.user_name = usuario
-
-        st.rerun()
-
-    st.stop()# ======================================================
 # CONFIG SUPABASE
 # ======================================================
 
