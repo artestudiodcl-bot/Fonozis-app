@@ -24,7 +24,7 @@ HEADERS = {
 
 st.set_page_config(
     page_title="Jam",
-    page_icon="logo.png",
+    page_icon="IMG_2478.jpeg",
     layout="centered"
 )
 st.markdown("""
@@ -96,7 +96,7 @@ st.markdown("""
 # HEADER
 # ======================================================
 
-st.image(logo, width=180)
+st.image(IMG_2478.jpeg)
 
 st.title(f"Fonozis | {st.session_state.usuario}")
 
