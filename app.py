@@ -32,6 +32,11 @@ st.markdown("""
 
 Guarda ideas, organiza fechas y comparte demos con tu banda en un solo lugar.
 """)
+# Asegúrate de que el logo esté en la misma carpeta que app.py
+st.set_page_config(
+    page_title="Jam", 
+    page_icon="logo.png" 
+)
 
 # ======================================================
 # LOGIN SIMPLE
