@@ -46,37 +46,85 @@ BANDAS = {
 # LOGIN
 # ======================================================
 
-if "banda" not in st.session_state:
+import uuid
 
-    st.title("🎸 Acceso a Jam")
+# =========================
+# CREATE OR JOIN BAND
+# =========================
 
-    banda_input = st.text_input("Nombre de la banda")
-    password = st.text_input("Contraseña", type="password")
-    usuario = st.text_input("Tu nombre")
+st.title("🎸 Jam - Login")
 
-    if st.button("Entrar"):
+mode = st.radio("Modo", ["Unirse a banda", "Crear banda"])
 
-        # 🔥 NORMALIZACIÓN FUERTE
-        banda = banda_input.strip().lower().replace(" ", "")
+name = st.text_input("Tu nombre")
 
-        if banda in BANDAS:
+band_name = st.text_input("Nombre de la banda")
+password = st.text_input("Contraseña", type="password")
 
-            if BANDAS[banda] == password:
+# =========================
+# CREATE BAND
+# =========================
 
-                st.session_state.banda = banda
-                st.session_state.usuario = usuario
+if st.button("Entrar"):
 
-                st.success("✅ Acceso permitido")
-                st.rerun()
+    if not name or not band_name or not password:
+        st.error("Completa todos los campos")
+        st.stop()
 
-            else:
-                st.error("❌ Contraseña incorrecta")
+    band_name = band_name.strip().lower()
 
+    # buscar banda
+    res = requests.post(
+        f"{BASE_URL}/rest/v1/bands?select=*",
+        headers=HEADERS,
+        json={}
+    )
+
+    bands = res.json() if res.status_code == 200 else []
+
+    existing = next((b for b in bands if b["name"] == band_name), None)
+
+    # =========================
+    # CREATE MODE
+    # =========================
+
+    if mode == "Crear banda":
+
+        if existing:
+            st.error("Esa banda ya existe")
         else:
-            st.error(f"❌ Banda no encontrada: '{banda}'")
-    
-    st.stop()
-# ======================================================
+
+            requests.post(
+                f"{BASE_URL}/rest/v1/bands",
+                headers=HEADERS,
+                json={
+                    "name": band_name,
+                    "password": password
+                }
+            )
+
+            st.success("Banda creada")
+
+    # =========================
+    # JOIN MODE
+    # =========================
+
+    else:
+
+        if not existing:
+            st.error("Banda no existe")
+        elif existing["password"] != password:
+            st.error("Contraseña incorrecta")
+        else:
+
+            st.session_state.band_id = existing["id"]
+            st.session_state.band_name = band_name
+            st.session_state.user_name = name
+
+            st.success("Bienvenido 🎸")
+            st.rerun()
+
+    st.stop()# ======================================================
 # VARIABLES GLOBALES
 # ======================================================
 
