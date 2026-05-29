@@ -23,7 +23,7 @@ HEADERS = {
 # ======================================================
 
 st.set_page_config(
-    page_title="Fonozis",
+    page_title="Jam",
     page_icon="logo.png",
     layout="centered"
 )
