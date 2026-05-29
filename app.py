@@ -49,7 +49,18 @@ if not st.session_state.banda:
             st.stop()
 
         banda = banda_input.strip().lower().replace(" ", "")
+# =========================
+# BUSCAR BANDA EN SUPABASE
+# =========================
 
+banda = banda_input.strip().lower()
+
+res = requests.get(
+    f"{BASE_URL}/rest/v1/bands?name=eq.{banda}",
+    headers=HEADERS
+)
+
+data = res.json()
         # =========================
         # CREAR BANDA
         # =========================
