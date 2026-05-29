@@ -32,11 +32,6 @@ st.markdown("""
 
 Guarda ideas, organiza fechas y comparte demos con tu banda en un solo lugar.
 """)
-# Asegúrate de que el logo esté en la misma carpeta que app.py
-st.set_page_config(
-    page_title="Jam", 
-    page_icon="logo.png" 
-)
 
 # ======================================================
 # LOGIN SIMPLE
@@ -44,8 +39,11 @@ st.set_page_config(
 
 if "usuario" not in st.session_state:
 
-    st.title("🎸 Jamct")
-    st.caption("El espacio creativo para bandas")
+    st.image(logo, width=180)
+
+st.title(f"Fonozis | {st.session_state.usuario}")
+
+st.caption("El espacio creativo para bandas")
 
     nombre = st.selectbox(
         "¿Quién eres?",
