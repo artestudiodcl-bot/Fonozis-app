@@ -23,12 +23,9 @@ HEADERS = {
 # ======================================================
 
 st.set_page_config(
-    page_title="Jam",
-    page_icon="IMG_2478.jpeg",
+    page_title="Fonozis",
+    page_icon="🎸",
     layout="centered"
-    # Muestra el logo en grande y centrado dentro de la página
-st.image("IMG_2478.jpeg", width=200)
-
 )
 
 st.markdown("""
