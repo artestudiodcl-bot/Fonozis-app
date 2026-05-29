@@ -37,7 +37,7 @@ BANDAS = {
 if "banda" not in st.session_state:
 
     st.title("🎸 Acceso a Jam")
-
+    st.caption("Bandas disponibles: Fonozis, Rafa")
     banda = st.text_input(
         "Nombre de la banda"
     ).strip().lower()
