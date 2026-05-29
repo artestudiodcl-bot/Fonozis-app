@@ -25,8 +25,8 @@ HEADERS = {
 # ======================================================
 
 BANDAS = {
-    "metallica": "1234",
-    "nirvana": "abc123",
+    "Fonozis": "1234",
+    "Rafa": "abc123",
     "blink182": "punkrock"
 }
 
