@@ -276,9 +276,6 @@ with tab2:
 
 with tab3:
 
-# Para mensajes:
-json={"prefix": st.session_state.banda}
-
 # Para audios:
 json={"prefix": st.session_state.banda}
 
