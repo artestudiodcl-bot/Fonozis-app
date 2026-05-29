@@ -150,10 +150,18 @@ with tab1:
 
     st.subheader("💬 Muro")
 
+    # ==========================================
+    # REFRESH AUTOMÁTICO
+    # ==========================================
+
     st_autorefresh(
         interval=3000,
         key="chat_refresh"
     )
+
+    # ==========================================
+    # ENVIAR MENSAJE
+    # ==========================================
 
     def send_msg():
 
@@ -176,11 +184,19 @@ with tab1:
 
             st.session_state.msg = ""
 
+    # ==========================================
+    # INPUT
+    # ==========================================
+
     st.text_input(
         "Escribe mensaje",
         key="msg",
         on_change=send_msg
     )
+
+    # ==========================================
+    # LEER MENSAJES
+    # ==========================================
 
     res = requests.get(
         f"{BASE_URL}/rest/v1/messages"
@@ -189,24 +205,70 @@ with tab1:
         headers=HEADERS
     )
 
+    # ==========================================
+    # MOSTRAR + TOAST
+    # ==========================================
+
     if res.status_code == 200:
 
         mensajes = res.json()
 
+        # -------------------------
+        # CONTADOR PARA NOTIFICACIÓN
+        # -------------------------
+
+        total_actual = len(mensajes)
+
+        if "last_count" not in st.session_state:
+            st.session_state.last_count = total_actual
+
+        # -------------------------
+        # NUEVO MENSAJE
+        # -------------------------
+
+        if total_actual > st.session_state.last_count:
+
+            ultimo = mensajes[-1]
+
+            if ultimo["user_name"] != USUARIO:
+
+                st.toast(
+                    f"🎸 Nuevo mensaje de {ultimo['user_name']}"
+                )
+
+        st.session_state.last_count = total_actual
+
+        # -------------------------
+        # SI VACÍO
+        # -------------------------
+
         if not mensajes:
             st.caption("No hay mensajes todavía 🎸")
 
+        # -------------------------
+        # MOSTRAR MENSAJES
+        # -------------------------
+
         for m in mensajes:
 
-            if m["user_name"] == USUARIO:
+            usuario_msg = m["user_name"]
+            texto_msg = m["message"]
+
+            if usuario_msg == USUARIO:
+
                 st.markdown(
-                    f"🟦 **Tú:** {m['message']}"
-                )
-            else:
-                st.markdown(
-                    f"🟨 **{m['user_name']}:** {m['message']}"
+                    f"🟦 **Tú:** {texto_msg}"
                 )
 
+            else:
+
+                st.markdown(
+                    f"🟨 **{usuario_msg}:** {texto_msg}"
+                )
+
+    else:
+
+        st.error(res.text)
 # ======================================================
 # SUBIR AUDIO
 # ======================================================
