@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from datetime import datetime
+from streamlit_autorefresh import st_autorefresh
 
 # ======================================================
 # CONFIG
@@ -23,7 +24,7 @@ HEADERS = {
 }
 
 # ======================================================
-# SESSION STATE
+# SESSION
 # ======================================================
 
 st.session_state.setdefault("band_id", None)
@@ -31,7 +32,7 @@ st.session_state.setdefault("band_name", None)
 st.session_state.setdefault("user_name", None)
 
 # ======================================================
-# LOGIN / CREATE BAND
+# LOGIN / CREAR BANDA
 # ======================================================
 
 if not st.session_state.band_id:
@@ -58,10 +59,7 @@ if not st.session_state.band_id:
 
         banda = banda_input.strip().lower()
 
-        # =========================
-        # BUSCAR BANDA
-        # =========================
-
+        # Buscar banda
         res = requests.get(
             f"{BASE_URL}/rest/v1/bands?name=eq.{banda}",
             headers=HEADERS
@@ -73,10 +71,7 @@ if not st.session_state.band_id:
 
         data = res.json()
 
-        # =========================
-        # CREAR
-        # =========================
-
+        # Crear banda
         if modo == "Crear banda":
 
             if data:
@@ -96,7 +91,7 @@ if not st.session_state.band_id:
                 st.error(create_res.text)
                 st.stop()
 
-            # volver a buscar
+            # buscar otra vez
             res = requests.get(
                 f"{BASE_URL}/rest/v1/bands?name=eq.{banda}",
                 headers=HEADERS
@@ -104,10 +99,7 @@ if not st.session_state.band_id:
 
             data = res.json()
 
-        # =========================
-        # UNIRSE
-        # =========================
-
+        # Entrar
         if not data:
             st.error("❌ Banda no encontrada")
             st.stop()
@@ -127,7 +119,7 @@ if not st.session_state.band_id:
     st.stop()
 
 # ======================================================
-# VARIABLES SEGURAS
+# VARIABLES
 # ======================================================
 
 BAND_ID = st.session_state.band_id
@@ -146,17 +138,22 @@ tab1, tab2, tab3, tab4 = st.tabs(
         "💬 Muro",
         "🎙️ Ideas",
         "🎧 Audios",
-        "📅 Fechas",
+        "📅 Fechas"
     ]
 )
 
 # ======================================================
-# TAB 1 - CHAT
+# CHAT
 # ======================================================
 
 with tab1:
 
     st.subheader("💬 Muro")
+
+    st_autorefresh(
+        interval=3000,
+        key="chat_refresh"
+    )
 
     def send_msg():
 
@@ -196,6 +193,9 @@ with tab1:
 
         mensajes = res.json()
 
+        if not mensajes:
+            st.caption("No hay mensajes todavía 🎸")
+
         for m in mensajes:
 
             if m["user_name"] == USUARIO:
@@ -208,7 +208,7 @@ with tab1:
                 )
 
 # ======================================================
-# TAB 2 - SUBIR AUDIO
+# SUBIR AUDIO
 # ======================================================
 
 with tab2:
@@ -250,11 +250,9 @@ with tab2:
             if res.status_code in [200, 201]:
                 st.success("✅ Publicado")
                 st.rerun()
-            else:
-                st.error(res.text)
 
 # ======================================================
-# TAB 3 - LISTAR AUDIOS
+# LISTA AUDIOS
 # ======================================================
 
 with tab3:
@@ -274,11 +272,13 @@ with tab3:
 
     if res.status_code == 200:
 
-        for f in sorted(
+        archivos = sorted(
             res.json(),
             key=lambda x: x["name"],
             reverse=True
-        ):
+        )
+
+        for f in archivos:
 
             url = (
                 f"{BASE_URL}/storage/v1/object/public/"
@@ -288,7 +288,7 @@ with tab3:
             st.audio(url)
 
 # ======================================================
-# TAB 4 - FECHAS
+# FECHAS
 # ======================================================
 
 with tab4:
@@ -307,8 +307,7 @@ with tab4:
         )
 
         contenido = (
-            f"{fecha}|{hora}|{titulo}|"
-            f"{lugar}|{USUARIO}"
+            f"{fecha}|{hora}|{titulo}|{lugar}|{USUARIO}"
         )
 
         path = f"fechas/{BANDA}/{filename}"
@@ -326,11 +325,9 @@ with tab4:
         if res.status_code in [200, 201]:
             st.success("✅ Guardado")
             st.rerun()
-        else:
-            st.error(res.text)
 
 # ======================================================
-# SIDEBAR
+# LOGOUT
 # ======================================================
 
 st.sidebar.markdown("---")
