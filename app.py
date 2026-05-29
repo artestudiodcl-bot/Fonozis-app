@@ -28,7 +28,7 @@ st.set_page_config(
     layout="centered"
 )
 st.markdown("""
-### Bienvenido a Fonozis
+### Bienvenido a Jam
 
 Guarda ideas, organiza fechas y comparte demos con tu banda en un solo lugar.
 """)
