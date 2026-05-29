@@ -41,7 +41,7 @@ if "usuario" not in st.session_state:
 
     st.image(logo, width=180)
 
-st.title(f"Fonozis | {st.session_state.usuario}")
+st.title(f"Jam | {st.session_state.usuario}")
 
 st.caption("El espacio creativo para bandas")
 
