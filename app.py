@@ -38,7 +38,7 @@ st.session_state.setdefault("user_name", None)
 if not st.session_state.band_id:
 
     st.title("🎸 Jam")
-   modo = st.radio(
+    modo = st.radio(
         "Modo",
         ["Unirse a banda", "Crear banda"]
     )
