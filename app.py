@@ -38,7 +38,6 @@ st.session_state.setdefault("user_name", None)
 if not st.session_state.band_id:
 
     st.title("🎸 Jam")
-    st.image("IMG_2478.jpeg", width=200)
    
 modo = st.radio(
         "Modo",
