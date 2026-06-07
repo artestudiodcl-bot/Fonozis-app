@@ -454,8 +454,8 @@ with tab4:
             st.success("✅ Guardado")
             st.rerun()
 
-st.markdown("---")
-st.subheader("📅 Próximas fechas")
+        st.markdown("---")
+        st.subheader("📅 Próximas fechas")
 
 res = requests.post(
     f"{BASE_URL}/storage/v1/object/list/fechas",
