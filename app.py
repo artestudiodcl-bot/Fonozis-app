@@ -297,8 +297,6 @@ st.markdown("""
 # MOSTRAR MENSAJES
 # ==========================================
 
-# MOSTRAR MENSAJES
-
 for m in mensajes:
 
     usuario_msg = m["user_name"]
