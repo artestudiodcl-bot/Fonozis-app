@@ -412,43 +412,43 @@ with tab4:
         st.markdown("---")
         st.subheader("📅 Próximas fechas")
 
-res = requests.post(
-    f"{BASE_URL}/storage/v1/object/list/fechas",
-    headers={
-        "Authorization": f"Bearer {SUPABASE_KEY}",
-        "apikey": SUPABASE_KEY,
-    },
-    json={
-        "prefix": f"{BANDA}/"
-    }
-)
-
-if res.status_code == 200:
-
-    archivos = sorted(
-        res.json(),
-        key=lambda x: x["name"],
-        reverse=True
+        res = requests.post(
+            f"{BASE_URL}/storage/v1/object/list/fechas",
+            headers={
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_KEY,
+        },
+        json={
+                "prefix": f"{BANDA}/"
+        }
     )
 
-    for f in archivos:
+    if res.status_code == 200:
 
-        url = (
-            f"{BASE_URL}/storage/v1/object/public/"
-            f"fechas/{BANDA}/{f['name']}"
+        archivos = sorted(
+            res.json(),
+            key=lambda x: x["name"],
+            reverse=True
         )
 
-        contenido = requests.get(url).text
+        for f in archivos:
 
-        datos = contenido.split("|")
+            url = (
+                f"{BASE_URL}/storage/v1/object/public/"
+                f"fechas/{BANDA}/{f['name']}"
+            )
 
-        if len(datos) >= 5:
+            contenido = requests.get(url).text
 
-            fecha_txt = datos[0]
-            hora_txt = datos[1]
-            titulo_txt = datos[2]
-            lugar_txt = datos[3]
-            usuario_txt = datos[4]
+            datos = contenido.split("|")
+
+            if len(datos) >= 5:
+
+                fecha_txt = datos[0]
+                hora_txt = datos[1]
+                titulo_txt = datos[2]
+                lugar_txt = datos[3]
+                usuario_txt = datos[4]
 
             st.markdown(
                 f"""
