@@ -297,7 +297,7 @@ st.markdown("""
 # MOSTRAR MENSAJES
 # ==========================================
 
-st.markdown('<div class="chat-wrap">', unsafe_allow_html=True)
+st.write("INICIO CHAT")
 
 for m in mensajes:
 
@@ -331,7 +331,7 @@ for m in mensajes:
             """,
             unsafe_allow_html=True
         )
-st.markdown('</div>', unsafe_allow_html=True)
+st.write("FIN CHAT")
 
 # ======================================================
 # SUBIR AUDIO
