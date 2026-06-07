@@ -254,15 +254,15 @@ with tab1:
 # ==========================================
 
     st.markdown("""
-<style>
+    <style>
 
-.chat-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+        .chat-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-.msg-me {
+    .msg-me {
         background: #007AFF;
         color: white;
         padding: 10px 14px;
