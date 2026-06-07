@@ -453,6 +453,62 @@ with tab4:
             st.success("✅ Guardado")
             st.rerun()
 
+st.markdown("---")
+st.subheader("📅 Próximas fechas")
+
+res = requests.post(
+    f"{BASE_URL}/storage/v1/object/list/fechas",
+    headers={
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "apikey": SUPABASE_KEY,
+    },
+    json={
+        "prefix": f"{BANDA}/"
+    }
+)
+
+if res.status_code == 200:
+
+    archivos = sorted(
+        res.json(),
+        key=lambda x: x["name"],
+        reverse=True
+    )
+
+    for f in archivos:
+
+        url = (
+            f"{BASE_URL}/storage/v1/object/public/"
+            f"fechas/{BANDA}/{f['name']}"
+        )
+
+        contenido = requests.get(url).text
+
+        datos = contenido.split("|")
+
+        if len(datos) >= 5:
+
+            fecha_txt = datos[0]
+            hora_txt = datos[1]
+            titulo_txt = datos[2]
+            lugar_txt = datos[3]
+            usuario_txt = datos[4]
+
+            st.markdown(
+                f"""
+### 🎸 {titulo_txt}
+
+📅 Fecha: {fecha_txt}
+
+🕒 Hora: {hora_txt}
+
+📍 Lugar: {lugar_txt}
+
+👤 Agregado por: {usuario_txt}
+
+---
+"""
+            )
 # ======================================================
 # LOGOUT
 # ======================================================
