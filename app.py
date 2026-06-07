@@ -452,19 +452,19 @@ with tab4:
 
             st.markdown(
                 f"""
-### 🎸 {titulo_txt}
+            ### 🎸 {titulo_txt}
 
-📅 Fecha: {fecha_txt}
+            📅 Fecha: {fecha_txt}
 
-🕒 Hora: {hora_txt}
+            🕒 Hora: {hora_txt}
 
-📍 Lugar: {lugar_txt}
+            📍 Lugar: {lugar_txt}
 
-👤 Agregado por: {usuario_txt}
+            👤 Agregado por: {usuario_txt}
 
----
-"""
-)
+            ---
+            """
+            )
             
 # ======================================================
 # Set List
