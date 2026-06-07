@@ -253,8 +253,8 @@ with tab1:
 # CSS ESTILO IPHONE
 # ==========================================
 
-    st.markdown("""
-    <style>
+st.markdown("""
+ <style>
 
     .chat-wrap {
         display: flex;
