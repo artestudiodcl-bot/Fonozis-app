@@ -385,7 +385,7 @@ with tab2:
         },
         json={
             "prefix": f"{BANDA}/"
-        }
+        },
     )
 
     if res.status_code == 200:
