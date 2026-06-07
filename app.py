@@ -450,7 +450,6 @@ with tab4:
                 lugar_txt = datos[3]
                 usuario_txt = datos[4]
 
-
         st.markdown(
             f"""
         ### 🎸 {titulo_txt}
