@@ -408,8 +408,6 @@ with tab3:
     f"{BASE_URL}/storage/v1/object/public/"
     f"audios/{f['name']}"
 )
-
-            st.write(url)
             
             st.audio(url)
 
