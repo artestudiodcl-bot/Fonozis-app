@@ -132,7 +132,7 @@ USUARIO = st.session_state.user_name
 st.title(f"🎸 Jam | {BANDA}")
 st.caption(f"Usuario: {USUARIO}")
 
-tab1, tab2, tab3, tab4 = st.tabs(
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
         "💬 Muro",
         "🎙️ Ideas",
@@ -509,6 +509,92 @@ if res.status_code == 200:
 ---
 """
             )
+
+with tab5:
+
+    st.subheader("🎵 Set List")
+
+    set_name = st.text_input(
+        "Nombre del Set",
+        key="set_name"
+    )
+
+    song_name = st.text_input(
+        "Canción",
+        key="song_name"
+    )
+
+    bpm = st.number_input(
+        "BPM",
+        min_value=40,
+        max_value=300,
+        value=120
+    )
+
+    key_signature = st.text_input(
+        "Tonalidad",
+        key="key_signature"
+    )
+
+    if st.button("Agregar canción"):
+
+        payload = {
+            "banda": BANDA,
+            "set_name": set_name,
+            "song_name": song_name,
+            "bpm": bpm,
+            "key_signature": key_signature,
+            "position": 999
+        }
+
+        res = requests.post(
+            f"{BASE_URL}/rest/v1/setlists",
+            headers={
+                **HEADERS,
+                "Prefer": "return=minimal"
+            },
+            json=payload
+        )
+
+        if res.status_code in [200, 201]:
+            st.success("✅ Canción agregada")
+            st.rerun()
+
+    st.markdown("---")
+    st.subheader("🎸 Sets guardados")
+
+    res = requests.get(
+        f"{BASE_URL}/rest/v1/setlists?banda=eq.{BANDA}&order=set_name.asc",
+        headers=HEADERS
+    )
+
+    if res.status_code == 200:
+
+        canciones = res.json()
+
+        sets = {}
+
+        for c in canciones:
+
+            nombre_set = c["set_name"]
+
+            if nombre_set not in sets:
+                sets[nombre_set] = []
+
+            sets[nombre_set].append(c)
+
+        for nombre_set, items in sets.items():
+
+            with st.expander(f"🎵 {nombre_set}"):
+
+                for i, cancion in enumerate(items, start=1):
+
+                    st.write(
+                        f"{i}. "
+                        f"{cancion['song_name']} "
+                        f"• {cancion['bpm']} BPM "
+                        f"• {cancion['key_signature']}"
+                    )
 # ======================================================
 # LOGOUT
 # ======================================================
