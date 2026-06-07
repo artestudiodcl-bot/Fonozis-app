@@ -399,6 +399,9 @@ with tab3:
         )
 
         for f in archivos:
+            
+            if "." not in f["name"]:
+                continue
 
             url = (
     f"{BASE_URL}/storage/v1/object/public/"
