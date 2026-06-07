@@ -375,16 +375,6 @@ with tab2:
 # LISTA AUDIOS
 # ======================================================
 
-Status: 200
-
-[
-  {
-    "name": "20250607193000_Noe_Bajo_Riff.m4a",
-    ...
-  }
-]
-with tab3:
-
     st.subheader("🎧 Audios")
 
     res = requests.post(
