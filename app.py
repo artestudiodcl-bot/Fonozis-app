@@ -378,15 +378,15 @@ with tab2:
     st.subheader("🎧 Audios")
 
     res = requests.post(
-        f"{BASE_URL}/storage/v1/object/list/audios",
-        headers={
-            "Authorization": f"Bearer {SUPABASE_KEY}",
-            "apikey": SUPABASE_KEY,
-        },
-        json={
-            "prefix": f"{BANDA}/"
-        },
-    )
+    f"{BASE_URL}/storage/v1/object/list/audios",
+    headers={
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "apikey": SUPABASE_KEY,
+    },
+    json={
+        "prefix": ""
+    }
+)
 
     if res.status_code == 200:
 
@@ -399,9 +399,9 @@ with tab2:
         for f in archivos:
 
             url = (
-                f"{BASE_URL}/storage/v1/object/public/"
-                f"audios/{BANDA}/{f['name']}"
-            )
+    f"{BASE_URL}/storage/v1/object/public/"
+    f"audios/{f['name']}"
+)
 
             st.audio(url)
 
