@@ -297,6 +297,8 @@ st.markdown("""
 # MOSTRAR MENSAJES
 # ==========================================
 
+st.markdown('<div class="chat-wrap">', unsafe_allow_html=True)
+
 for m in mensajes:
 
     usuario_msg = m["user_name"]
@@ -329,6 +331,7 @@ for m in mensajes:
             """,
             unsafe_allow_html=True
         )
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ======================================================
 # SUBIR AUDIO
