@@ -253,7 +253,7 @@ with tab1:
 # CSS ESTILO IPHONE
 # ==========================================
 
-    st.markdown("""
+    st.markdown(""" st.error("CHAT")
     <style>
 
     .chat-wrap {
