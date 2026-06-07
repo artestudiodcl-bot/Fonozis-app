@@ -417,7 +417,7 @@ with tab3:
 # ======================================================
 
 with tab4:
-
+    st.error("ESTOY EN TAB4")
     st.subheader("📅 Fechas")
 
     fecha = st.date_input("Fecha")
@@ -515,7 +515,7 @@ if res.status_code == 200:
 # ======================================================
 
 with tab5:
-
+    st.error("ESTOY EN TAB4")
     st.subheader("🎵 Set List")
 
     set_name = st.text_input(
