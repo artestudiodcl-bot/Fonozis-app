@@ -253,45 +253,49 @@ with tab1:
 # CSS ESTILO IPHONE
 # ==========================================
 
+# ==========================================
+# CSS ESTILO IPHONE
+# ==========================================
+
 st.markdown("""
- <style>
+<style>
 
-    .chat-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
+.chat-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-    .msg-me {
-        background: #007AFF;
-        color: white;
-        padding: 10px 14px;
-        border-radius: 18px;
-        width: fit-content;
-        max-width: 75%;
-        margin-left: auto;
-        font-size: 16px;
-    }
+.msg-me {
+    background: #007AFF;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 18px;
+    width: fit-content;
+    max-width: 75%;
+    margin-left: auto;
+    font-size: 16px;
+}
 
-    .msg-other {
-        background: #E9E9EB;
-        color: black;
-        padding: 10px 14px;
-        border-radius: 18px;
-        width: fit-content;
-        max-width: 75%;
-        margin-right: auto;
-        font-size: 16px;
-    }
+.msg-other {
+    background: #E9E9EB;
+    color: black;
+    padding: 10px 14px;
+    border-radius: 18px;
+    width: fit-content;
+    max-width: 75%;
+    margin-right: auto;
+    font-size: 16px;
+}
 
-    .msg-name {
-        font-size: 12px;
-        opacity: 0.7;
-        margin-top: 4px;
-    }
+.msg-name {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 4px;
+}
 
-    </style>
-    """, unsafe_allow_html=True)
+</style>
+""", unsafe_allow_html=True)
 
 # ==========================================
 # MOSTRAR MENSAJES
