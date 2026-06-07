@@ -245,17 +245,6 @@ with tab1:
         if not mensajes:
             st.caption("No hay mensajes todavía 🎸")
 
-        # -------------------------
-        # MOSTRAR MENSAJES
-        # -------------------------
-
-if res.status_code == 200:
-
-    mensajes = res.json()
-
-    for m in mensajes:
-        st.write(f"{m['user_name']}: {m['message']}")
-
 # ==========================================
 # MOSTRAR MENSAJES
 # ==========================================
