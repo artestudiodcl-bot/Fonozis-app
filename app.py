@@ -256,7 +256,7 @@ with tab1:
     st.markdown("""
     <style>
 
-        .chat-wrap {
+    .chat-wrap {
         display: flex;
         flex-direction: column;
         gap: 8px;
