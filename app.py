@@ -446,7 +446,9 @@ with tab4:
             },
             data=contenido.encode("utf-8")
         )
-
+            st.write("Status:", res.status_code)
+            st.write(res.text)
+            
         if res.status_code in [200, 201]:
             st.success("✅ Guardado")
             st.rerun()
