@@ -375,6 +375,8 @@ with tab2:
 # LISTA AUDIOS
 # ======================================================
 
+with tab3:
+
     st.subheader("🎧 Audios")
 
     res = requests.post(
