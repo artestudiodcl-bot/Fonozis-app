@@ -450,22 +450,23 @@ with tab4:
                 lugar_txt = datos[3]
                 usuario_txt = datos[4]
 
-            st.markdown(
-                f"""
-            ### 🎸 {titulo_txt}
 
-            📅 Fecha: {fecha_txt}
+        st.markdown(
+            f"""
+        ### 🎸 {titulo_txt}
 
-            🕒 Hora: {hora_txt}
+        📅 Fecha: {fecha_txt}
 
-            📍 Lugar: {lugar_txt}
+       🕒 Hora: {hora_txt}
 
-            👤 Agregado por: {usuario_txt}
+       📍 Lugar: {lugar_txt}
 
-            ---
-            """
-            )
-            
+       👤 Agregado por: {usuario_txt}
+
+       ---
+       """
+       )
+        
 # ======================================================
 # Set List
 # ======================================================
