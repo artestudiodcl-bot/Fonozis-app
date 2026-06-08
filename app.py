@@ -13,6 +13,38 @@ st.set_page_config(
     layout="centered"
 )
 
+st.markdown("""
+<style>
+
+.msg-me{
+    background:#007AFF;
+    color:white;
+    padding:12px;
+    border-radius:18px;
+    margin-top:6px;
+    margin-bottom:6px;
+    margin-left:25%;
+}
+
+.msg-other{
+    background:#2C2C2E;
+    color:white;
+    padding:12px;
+    border-radius:18px;
+    margin-top:6px;
+    margin-bottom:6px;
+    margin-right:25%;
+}
+
+.msg-name{
+    font-size:11px;
+    opacity:0.7;
+    margin-top:5px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 PROJECT_ID = "yzwwstvrqjtaaoqxbwtz"
 BASE_URL = f"https://{PROJECT_ID}.supabase.co"
 
@@ -250,8 +282,68 @@ with tab1:
 # ==========================================
 
 def send_msg():
-    pass
-    
+
+    text = st.session_state.msg
+
+    if text.strip():
+
+        res = requests.post(
+            f"{BASE_URL}/rest/v1/messages",
+            headers=HEADERS,
+            json={
+                "band_id": BAND_ID,
+                "user_name": USUARIO,
+                "message": text
+            }
+        )
+
+        if res.status_code not in [200, 201]:
+            st.error(res.text)
+
+        st.session_state.msg = ""
+        
+    with tab1:
+
+    st.subheader("💬 Muro")
+
+    for m in mensajes:
+
+        usuario_msg = m["user_name"]
+        texto_msg = m["message"]
+
+        if usuario_msg == USUARIO:
+
+            st.markdown(
+                f"""
+                <div class="msg-me">
+                    {texto_msg}
+                    <div class="msg-name">
+                        Tú
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        else:
+
+            st.markdown(
+                f"""
+                <div class="msg-other">
+                    {texto_msg}
+                    <div class="msg-name">
+                        {usuario_msg}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    st.text_input(
+        "Mensaje",
+        key="msg",
+        on_change=send_msg
+    )
 # ======================================================
 # SUBIR AUDIO
 # ======================================================
