@@ -137,6 +137,9 @@ if not st.session_state.band_id:
             )
 
             data = res.json()
+            
+            st.write("Buscando:", banda)
+            st.write("Respuesta:", data)
 
         # Entrar
         if not data:
