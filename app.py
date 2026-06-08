@@ -16,6 +16,16 @@ st.set_page_config(
     layout="centered"
 )
 
+# Firebase
+if not firebase_admin._apps:
+    firebase_json = json.loads(
+        st.secrets["FIREBASE_SERVICE_ACCOUNT"]
+    )
+
+    cred = credentials.Certificate(firebase_json)
+
+    firebase_admin.initialize_app(cred)
+    
 st.markdown("""
 <style>
 
