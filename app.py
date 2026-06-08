@@ -400,11 +400,7 @@ with tab4:
         f for f in archivos
         if "." in f["name"]
     ]
-        st.write("Archivos encontrados:", len(archivos))
-
-        for f in archivos:
-            st.write(f["name"])
-    
+     
         for f in archivos:
 
             url = (
