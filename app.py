@@ -398,7 +398,7 @@ with tab4:
         )
         archivos = [
         f for f in archivos
-        if "." in f["name"]
+        if f["name"].endswith(".txt")
     ]
      
         for f in archivos:
