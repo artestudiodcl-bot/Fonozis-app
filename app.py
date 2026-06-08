@@ -16,30 +16,38 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.msg-me{
-    background:#007AFF;
+.msg-me {
+    background:#0A84FF;
     color:white;
     padding:12px;
     border-radius:18px;
-    margin-top:6px;
-    margin-bottom:6px;
+    margin:8px 0;
     margin-left:25%;
 }
 
-.msg-other{
+.msg-other {
     background:#2C2C2E;
     color:white;
     padding:12px;
     border-radius:18px;
-    margin-top:6px;
-    margin-bottom:6px;
+    margin:8px 0;
     margin-right:25%;
 }
 
-.msg-name{
-    font-size:11px;
+.msg-name {
+    font-size:12px;
     opacity:0.7;
-    margin-top:5px;
+    margin-top:4px;
+}
+
+.chat-input {
+    position: fixed;
+    bottom: 15px;
+    left: 320px;
+    right: 30px;
+    z-index: 999;
+    background: #0E1117;
+    padding-top: 10px;
 }
 
 </style>
@@ -180,8 +188,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 
 with tab1:
 
-    st.subheader("💬 Muro")
-
     # ==========================================
     # REFRESH AUTOMÁTICO
     # ==========================================
@@ -220,11 +226,21 @@ with tab1:
     # INPUT
     # ==========================================
 
-    st.text_input(
+    st.markdown(
+    '<div class="chat-input">',
+    unsafe_allow_html=True
+)
+
+st.text_input(
     "Escribe un mensaje...",
     key="msg",
     on_change=send_msg,
     label_visibility="collapsed"
+)
+
+st.markdown(
+    '</div>',
+    unsafe_allow_html=True
 )
     
     # ==========================================
