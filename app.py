@@ -396,10 +396,10 @@ with tab4:
             key=lambda x: x["name"],
             reverse=True
         )
-st.write("Archivos encontrados:", len(archivos))
+        st.write("Archivos encontrados:", len(archivos))
 
-for f in archivos:
-    st.write(f["name"])
+        for f in archivos:
+            st.write(f["name"])
     
         for f in archivos:
 
