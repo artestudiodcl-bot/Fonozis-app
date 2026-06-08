@@ -229,7 +229,7 @@ def send_msg():
     st.markdown(
         '<div class="chat-input">',
         unsafe_allow_html=True
-     )
+    )
 
     st.text_input(
         "Escribe un mensaje...",
