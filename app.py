@@ -353,7 +353,12 @@ with tab1:
                 """,
                 unsafe_allow_html=True
             )
-
+    st.text_input(
+    "Escribe un mensaje...",
+    key="msg",
+    on_change=send_msg,
+    label_visibility="collapsed"
+)
 # ======================================================
 # SUBIR AUDIO
 # ======================================================
