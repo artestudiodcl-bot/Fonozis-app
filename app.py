@@ -408,7 +408,9 @@ with tab4:
                 f"fechas/{BANDA}/{f['name']}"
             )
 
-            contenido = requests.get(url).textst.write(url)
+            contenido = requests.get(url).text
+            
+            st.write(url)
             st.write(contenido[:100])
             
             datos = contenido.split("|")
