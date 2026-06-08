@@ -338,29 +338,28 @@ with tab3:
 # ======================================================
 # FECHAS
 # ======================================================
-
 with tab4:
-    
+
     st.subheader("📅 Fechas")
 
     fecha = st.date_input("Fecha")
     hora = st.time_input("Hora")
-    titulo = st.text_input("Evento")
-    lugar = st.text_input("Lugar")
+    titulo = st.text_input("Evento", key="evento_fecha")
+    lugar = st.text_input("Lugar", key="lugar_fecha")
+
+    # =========================
+    # GUARDAR FECHA
+    # =========================
 
     if st.button("Guardar fecha"):
 
-        filename = (
-            f"{datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
-        )
+        filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
 
         contenido = (
             f"{fecha}|{hora}|{titulo}|{lugar}|{USUARIO}"
         )
 
         path = f"fechas/{BANDA}/{filename}"
-        
-        st.write("BANDA =", BANDA)
 
         res = requests.post(
             f"{BASE_URL}/storage/v1/object/{path}",
@@ -371,16 +370,21 @@ with tab4:
             },
             data=contenido.encode("utf-8")
         )
-        st.write("Status:", res.status_code)
-        st.write(res.text)
-            
-        if res.status_code in [200, 201]:
-            st.success("✅ Guardado")
-            st.rerun()
 
-        st.markdown("---")
-        st.subheader("📅 Próximas fechas")
-        res = requests.post(
+        if res.status_code in [200, 201]:
+            st.success("✅ Fecha guardada")
+            st.rerun()
+        else:
+            st.error(res.text)
+
+    # =========================
+    # LISTAR FECHAS
+    # =========================
+
+    st.markdown("---")
+    st.subheader("📅 Próximas fechas")
+
+    res = requests.post(
         f"{BASE_URL}/storage/v1/object/list/fechas",
         headers={
             "Authorization": f"Bearer {SUPABASE_KEY}",
@@ -391,9 +395,6 @@ with tab4:
         }
     )
 
-    st.write("STATUS:", res.status_code)
-    st.write("JSON:", res.json())
-
     if res.status_code == 200:
 
         archivos = sorted(
@@ -401,13 +402,15 @@ with tab4:
             key=lambda x: x["name"],
             reverse=True
         )
-        archivos = [    
+
+        archivos = [
             f for f in archivos
             if f["name"].endswith(".txt")
         ]
 
-        st.write(archivos)
-        
+        if not archivos:
+            st.info("No hay fechas registradas")
+
         for f in archivos:
 
             url = (
@@ -416,10 +419,7 @@ with tab4:
             )
 
             contenido = requests.get(url).text
-            
-            st.write(url)
-            st.write(contenido[:100])
-            
+
             datos = contenido.split("|")
 
             if len(datos) >= 5:
@@ -444,7 +444,11 @@ with tab4:
 
 ---
 """
-                )       
+                )
+
+    else:
+        st.error("No se pudieron cargar las fechas")
+     
 # ======================================================
 # Set List
 # ======================================================
