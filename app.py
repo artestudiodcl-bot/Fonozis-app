@@ -418,7 +418,7 @@ with tab4:
                 f"fechas/{BANDA}/{f['name']}"
             )
 
-            contenido = requests.get(url).text
+            contenido = requests.get(url).content.decode("utf-8")
 
             datos = contenido.split("|")
 
