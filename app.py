@@ -396,6 +396,10 @@ with tab4:
             key=lambda x: x["name"],
             reverse=True
         )
+        archivos = [
+        f for f in archivos
+        if "." in f["name"]
+    ]
         st.write("Archivos encontrados:", len(archivos))
 
         for f in archivos:
