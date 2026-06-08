@@ -359,6 +359,8 @@ with tab4:
         )
 
         path = f"fechas/{BANDA}/{filename}"
+        
+        st.write("BANDA =", BANDA)
 
         res = requests.post(
             f"{BASE_URL}/storage/v1/object/{path}",
