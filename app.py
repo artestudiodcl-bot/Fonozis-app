@@ -249,42 +249,8 @@ with tab1:
 # MOSTRAR MENSAJES
 # ==========================================
 
-st.write("INICIO CHAT")
-
-for m in mensajes:
-
-    usuario_msg = m["user_name"]
-    texto_msg = m["message"]
-
-    if usuario_msg == USUARIO:
-
-        st.markdown(
-            f"""
-            <div class="msg-me">
-                {texto_msg}
-                <div class="msg-name">
-                    Tú
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    else:
-
-        st.markdown(
-            f"""
-            <div class="msg-other">
-                {texto_msg}
-                <div class="msg-name">
-                    {usuario_msg}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-st.write("FIN CHAT")
-
+def send_msg():
+    
 # ======================================================
 # SUBIR AUDIO
 # ======================================================
