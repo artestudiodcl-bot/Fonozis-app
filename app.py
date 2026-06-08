@@ -397,6 +397,7 @@ with tab4:
             reverse=True
         )
         archivos = [
+        st.write(archivos)    
         f for f in archivos
         if f["name"].endswith(".txt")
     ]
