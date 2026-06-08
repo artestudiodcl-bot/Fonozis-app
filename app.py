@@ -454,7 +454,7 @@ with tab3:
         "apikey": SUPABASE_KEY,
     },
     json={
-        "prefix": ""
+    "prefix": f"{BANDA}/"
     }
 )
 
@@ -473,7 +473,7 @@ with tab3:
 
             url = (
     f"{BASE_URL}/storage/v1/object/public/"
-    f"audios/{f['name']}"
+    f"audios/{BANDA}/{f['name']}"
 )
             
             st.audio(url)
