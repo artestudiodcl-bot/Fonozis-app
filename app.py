@@ -302,7 +302,7 @@ def send_msg():
 
         st.session_state.msg = ""
         
-    with tab1:
+with tab1:
 
     st.subheader("💬 Muro")
 
