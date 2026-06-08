@@ -221,10 +221,101 @@ def send_msg():
                 st.error(res.text)
 
             st.session_state.msg = ""
-
-    # ==========================================
+            
+    # =====================================
     # INPUT
-    # ==========================================
+    # =====================================
+
+    st.markdown(
+        '<div class="chat-input">',
+        unsafe_allow_html=True
+    )
+
+    st.text_input(
+        "Escribe un mensaje...",
+        key="msg",
+        on_change=send_msg,
+        label_visibility="collapsed"
+    )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    # =====================================
+    # LEER MENSAJES
+    # =====================================
+
+    res = requests.get(
+        f"{BASE_URL}/rest/v1/messages"
+        f"?band_id=eq.{BAND_ID}"
+        f"&order=created_at.asc",
+        headers=HEADERS
+    )
+
+    # =====================================
+    # MOSTRAR + TOAST
+    # =====================================
+
+    if res.status_code == 200:
+
+        mensajes = res.json()
+
+        total_actual = len(mensajes)
+
+        if "last_count" not in st.session_state:
+            st.session_state.last_count = total_actual
+
+        if total_actual > st.session_state.last_count:
+
+            ultimo = mensajes[-1]
+
+            if ultimo["user_name"] != USUARIO:
+                st.toast(
+                    f"🎸 Nuevo mensaje de {ultimo['user_name']}"
+                )
+
+        st.session_state.last_count = total_actual
+
+        if not mensajes:
+            st.caption("No hay mensajes todavía 🎸")
+
+        st.subheader("💬 Muro")
+
+        for m in mensajes:
+
+            usuario_msg = m["user_name"]
+            texto_msg = m["message"]
+
+            if usuario_msg == USUARIO:
+
+                st.markdown(
+                    f"""
+                    <div class="msg-me">
+                        {texto_msg}
+                        <div class="msg-name">
+                            Tú
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            else:
+
+                st.markdown(
+                    f"""
+                    <div class="msg-other">
+                        {texto_msg}
+                        <div class="msg-name">
+                            {usuario_msg}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+    
     st.markdown(
         '<div class="chat-input">',
         unsafe_allow_html=True
