@@ -412,14 +412,14 @@ with tab4:
         st.markdown("---")
         st.subheader("📅 Próximas fechas")
 
-        res = requests.post(
-            f"{BASE_URL}/storage/v1/object/list/fechas",
-            headers={
-                "Authorization": f"Bearer {SUPABASE_KEY}",
-                "apikey": SUPABASE_KEY,
+     res = requests.post(
+        f"{BASE_URL}/storage/v1/object/list/fechas",
+        headers={
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "apikey": SUPABASE_KEY,
         },
         json={
-                "prefix": f"{BANDA}/"
+            "prefix": f"{BANDA}/"
         }
     )
 
@@ -439,7 +439,6 @@ with tab4:
             )
 
             contenido = requests.get(url).text
-
             datos = contenido.split("|")
 
             if len(datos) >= 5:
@@ -450,22 +449,21 @@ with tab4:
                 lugar_txt = datos[3]
                 usuario_txt = datos[4]
 
-        st.markdown(
-            f"""
-        ### 🎸 {titulo_txt}
+                st.markdown(
+                    f"""
+### 🎸 {titulo_txt}
 
-        📅 Fecha: {fecha_txt}
+📅 Fecha: {fecha_txt}
 
-       🕒 Hora: {hora_txt}
+🕒 Hora: {hora_txt}
 
-       📍 Lugar: {lugar_txt}
+📍 Lugar: {lugar_txt}
 
-       👤 Agregado por: {usuario_txt}
+👤 Agregado por: {usuario_txt}
 
-       ---
-       """
-       )
-        
+---
+"""
+                )       
 # ======================================================
 # Set List
 # ======================================================
