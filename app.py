@@ -201,6 +201,8 @@ with tab1:
     # ENVIAR MENSAJE
     # ==========================================
 
+def send_msg():
+    
         text = st.session_state.msg
 
         if text.strip():
