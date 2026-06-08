@@ -221,9 +221,10 @@ with tab1:
     # ==========================================
 
     st.text_input(
-    "Mensaje",
+    "Escribe un mensaje...",
     key="msg",
-    on_change=send_msg
+    on_change=send_msg,
+    label_visibility="collapsed"
 )
     
     # ==========================================
