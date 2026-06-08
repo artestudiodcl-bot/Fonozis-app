@@ -389,6 +389,9 @@ with tab4:
         }
     )
 
+    st.write("STATUS:", res.status_code)
+st.write("JSON:", res.json())
+
     if res.status_code == 200:
 
         archivos = sorted(
