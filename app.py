@@ -19,7 +19,7 @@ st.set_page_config(
 # Firebase
 if not firebase_admin._apps:
     firebase_json = json.loads(
-        st.secrets["FIREBASE_SERVICE_ACCOUNT"]
+        st.write(st.secrets)
     )
 
     cred = credentials.Certificate(firebase_json)
