@@ -396,12 +396,13 @@ with tab4:
             key=lambda x: x["name"],
             reverse=True
         )
-        archivos = [
-        st.write(archivos)    
-        f for f in archivos
-        if f["name"].endswith(".txt")
-    ]
-     
+        archivos = [    
+            f for f in archivos
+            if f["name"].endswith(".txt")
+        ]
+
+        st.write(archivos)
+        
         for f in archivos:
 
             url = (
