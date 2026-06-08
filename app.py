@@ -226,22 +226,22 @@ def send_msg():
     # INPUT
     # ==========================================
 
-    st.markdown(
-        '<div class="chat-input">',
-        unsafe_allow_html=True
-    )
+st.markdown(
+    '<div class="chat-input">',
+    unsafe_allow_html=True
+ )
 
-    st.text_input(
-        "Escribe un mensaje...",
-        key="msg",
-        on_change=send_msg,
-        label_visibility="collapsed"
-    )
+st.text_input(
+    "Escribe un mensaje...",
+    key="msg",
+    on_change=send_msg,
+    label_visibility="collapsed"
+)
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True
-    )
+st.markdown(
+    '</div>',
+    unsafe_allow_html=True
+)
     
     # ==========================================
     # LEER MENSAJES
