@@ -392,6 +392,10 @@ with tab4:
     if res.status_code == 200:
 
         archivos = sorted(
+            st.write("Archivos encontrados:", len(archivos))
+
+for f in archivos:
+    st.write(f["name"])
             res.json(),
             key=lambda x: x["name"],
             reverse=True
