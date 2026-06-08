@@ -201,7 +201,7 @@ with tab1:
     # ENVIAR MENSAJE
     # ==========================================
 
-def send_msg():
+    def send_msg():
     
         text = st.session_state.msg
 
