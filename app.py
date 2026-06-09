@@ -7,6 +7,13 @@ from firebase_admin import credentials, messaging
 import json
 import requests
 import streamlit.components.v1 as components
+components.html("""
+<h1>TEST HTML</h1>
+<script>
+document.body.style.background='red';
+alert('FUNCIONA');
+</script>
+""", height=200)
 
 def save_push_token(token, usuario, banda):
     url = f"{BASE_URL}/rest/v1/push_tokens"
