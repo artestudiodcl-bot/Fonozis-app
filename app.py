@@ -404,7 +404,8 @@ with tab1:
 
                 st.markdown(
                     f"""
-                    <div class="msg-other">
+                    <div style="display:flex; justify-content:flex-start;">
+                        <div class="msg-other">
                         {texto_msg}
                         <div class="msg-name">
                             {hora_msg} · {usuario_msg}
