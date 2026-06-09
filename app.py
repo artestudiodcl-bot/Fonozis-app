@@ -445,19 +445,18 @@ with tab1:
     unsafe_allow_html=True
 )
     
-    col1, col2 = st.columns([8,1])
+        col1, col2 = st.columns([8,1])
 
 with col1:
-    st.text_input(...)
-
-with col2:
-    st.button("➤")
-    
+    st.text_input(
         "Escribe un mensaje...",
-    key="msg",
+        key="msg",
         on_change=send_msg,
         label_visibility="collapsed"
     )
+
+with col2:
+    st.button("➤")
 
     st.markdown(
         '</div>',
