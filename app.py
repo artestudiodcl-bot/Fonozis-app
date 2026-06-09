@@ -444,8 +444,8 @@ with tab1:
     "<div style='height:120px'></div>",
     unsafe_allow_html=True
 )
-    
-        col1, col2 = st.columns([8,1])
+
+col1, col2 = st.columns([8,1])
 
 with col1:
     st.text_input(
