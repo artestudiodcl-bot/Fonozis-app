@@ -26,6 +26,8 @@ if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_json)
 
     firebase_admin.initialize_app(cred)
+
+st.success("✅ Firebase conectado")
     
 st.markdown("""
 <style>
