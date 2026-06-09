@@ -76,9 +76,17 @@ st.set_page_config(
     text-align: left;
     display: inline-block;
 }
-
+.msg-me {
+    background: #0A84FF !important;
+    color: white !important;
+    padding: 14px 18px;
+    border-radius: 22px;
+    max-width: 75%;
+    width: fit-content;
+    display: inline-block;
+}
 .msg-row {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .msg-other {
