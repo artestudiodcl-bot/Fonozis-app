@@ -409,7 +409,7 @@ with tab1:
 
                 st.markdown(
                     f"""
-                    <div class="msg-row" style="display:flex; justify-content:flex-end;">
+                    <div class="msg-row" style="display:flex; justify-content:flex-start;">
                         <div class="msg-other">
                             {texto_msg}
                             <div class="msg-name">
