@@ -15,8 +15,6 @@ st.set_page_config(
     layout="centered"
 )
 
-st.image("IMG_2478.jpeg", width=180)
-
 # Firebase
 if not firebase_admin._apps:
 
