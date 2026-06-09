@@ -67,24 +67,28 @@ st.set_page_config(
 )
 
 .msg-me {
-    background:#0A84FF;
-    color:white;
-    padding:12px;
-    border-radius:18px;
-    margin-left:auto;
-    max-width:75%;
-    width:fit-content;
-    text-align:left;
+    background: #0A84FF;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 20px;
+    max-width: 75%;
+    width: fit-content;
+    text-align: left;
+    display: inline-block;
+}
+
+.msg-row {
+    margin-bottom: 8px;
 }
 
 .msg-other {
-    background:#2C2C2E;
-    color:white;
-    padding:12px;
-    border-radius:18px;
-    margin-right:auto;
-    max-width:75%;
-    width:fit-content;
+    background: #2C2C2E;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 20px;
+    max-width: 75%;
+    width: fit-content;
+    display: inline-block;
 }
 
 .msg-name {
@@ -389,7 +393,7 @@ with tab1:
 
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:flex-end;">
+                    <div class="msg-row" style="display:flex; justify-content:flex-end;">
                         <div class="msg-me">
                             {texto_msg}
                             <div class="msg-name">
@@ -405,7 +409,7 @@ with tab1:
 
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:flex-start;">
+                    <div class="msg-row" style="display:flex; justify-content:flex-end;">
                         <div class="msg-other">
                             {texto_msg}
                             <div class="msg-name">
