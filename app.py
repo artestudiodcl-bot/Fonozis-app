@@ -440,9 +440,18 @@ with tab1:
         unsafe_allow_html=True
     )
     
-    st.markdown("<div style='height:100px'></div>", unsafe_allow_html=True)
+    st.markdown(
+    "<div style='height:120px'></div>",
+    unsafe_allow_html=True
+)
     
-    st.text_input(
+    col1, col2 = st.columns([8,1])
+
+with col1:
+    st.text_input(...)
+
+with col2:
+    st.button("➤")
         "Escribe un mensaje...",
     key="msg",
         on_change=send_msg,
