@@ -85,8 +85,10 @@ st.set_page_config(
     width: fit-content;
     display: inline-block;
 }
+
 .msg-row {
-    margin-bottom: 4px;
+    display: flex;
+    margin: 4px 0;
 }
 
 .msg-other {
