@@ -15,14 +15,6 @@ st.set_page_config(
     page_icon="🎸",
     layout="centered"
 )
-
-# Firebase
-if not firebase_admin._apps:
-    cred = credentials.Certificate(
-        dict(st.secrets["FIREBASE_SERVICE_ACCOUNT"])
-    )
-
-    firebase_admin.initialize_app(cred)
     
 st.markdown("""
 <style>
