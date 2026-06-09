@@ -298,6 +298,10 @@ with tab1:
 
         st.subheader("💬 Muro")
 
+        st.write("Mensajes:", len(mensajes))
+        st.write("Last count:", st.session_state.last_count)
+        st.write("Usuario:", USUARIO)
+
         for m in mensajes:
 
             usuario_msg = m["user_name"]
