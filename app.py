@@ -46,19 +46,19 @@ if not firebase_admin._apps:
 
     firebase_admin.initialize_app(cred)
     
-   components.html("""
-   <script>
+    components.html("""
+    <script>
 
-   Notification.requestPermission().then(function(permission){
+    Notification.requestPermission().then(function(permission){
 
-       if(permission === "granted"){
-        alert("Push permitido");
-       }
+        if(permission === "granted"){
+         alert("Push permitido");
+        }
 
-   });
+    });
 
-   </script>
-   """, height=0) 
+    </script>
+    """, height=0) 
   
 st.markdown("""
 <style>
