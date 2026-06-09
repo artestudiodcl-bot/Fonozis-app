@@ -18,8 +18,6 @@ st.set_page_config(
 
 st.image("IMG_2478.jpeg", width=180)
 
-st.title("Jam")
-
 # Firebase
 if not firebase_admin._apps:
 
