@@ -5,7 +5,25 @@ from streamlit_autorefresh import st_autorefresh
 import firebase_admin
 from firebase_admin import credentials, messaging
 import json
+import requests
 
+def save_push_token(token, usuario, banda):
+    url = f"{BASE_URL}/rest/v1/push_tokens"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "token": token,
+        "user_name": usuario,
+        "band_id": banda
+    }
+    res = requests.post(url, headers=headers, json=data)
+    if res.status_code in [200, 201]:
+        print(f"Token guardado para {usuario}")
+    else:
+        print("Error guardando token:", res.text)
 # ======================================================
 # CONFIG
 # ======================================================
