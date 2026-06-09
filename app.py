@@ -71,8 +71,10 @@ st.set_page_config(
     color:white;
     padding:12px;
     border-radius:18px;
-    margin:8px 0;
-    margin-left:25%;
+    margin-left:auto;
+    max-width:75%;
+    width:fit-content;
+    text-align:left;
 }
 
 .msg-other {
@@ -80,8 +82,9 @@ st.set_page_config(
     color:white;
     padding:12px;
     border-radius:18px;
-    margin:8px 0;
-    margin-right:25%;
+    margin-right:auto;
+    max-width:75%;
+    width:fit-content;
 }
 
 .msg-name {
@@ -367,9 +370,16 @@ with tab1:
         if mensajes_nuevos > 0:
             st.info(f"🔔 Hay {mensajes_nuevos} mensajes nuevos")
             st.subheader("💬 Muro")
+            
+        st.markdown("""
+        <div class="chat-container">
+        """, unsafe_allow_html=True)
         
         for m in mensajes:
-
+        
+        st.markdown("""
+        </div>
+        """, unsafe_allow_html=True)
             usuario_msg = m["user_name"]
             texto_msg = m["message"]
             hora_msg = m["created_at"][11:16]
