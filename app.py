@@ -6,12 +6,20 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 import json
 import requests
+import streamlit as st
 import streamlit.components.v1 as components
+
+js_code = """
+<script>
 if ('Notification' in window) {
     alert("Notification API encontrada");
 } else {
     alert("Notification API NO encontrada");
 }
+</script>
+"""
+
+components.html(js_code, height=100)
 
 alert(navigator.userAgent);
 
