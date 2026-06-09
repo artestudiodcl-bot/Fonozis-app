@@ -47,9 +47,9 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
     
    components.html("""
-<script>
+   <script>
 
-Notification.requestPermission().then(function(permission){
+   Notification.requestPermission().then(function(permission){
 
     if(permission === "granted"){
         alert("Push permitido");
