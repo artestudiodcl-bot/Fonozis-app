@@ -391,9 +391,10 @@ with tab1:
                     f"""
                     <div style="display:flex; justify-content:flex-end;">
                         <div class="msg-me">
-                        {texto_msg}
-                        <div class="msg-name">
-                            {hora_msg} · Tú
+                            {texto_msg}
+                            <div class="msg-name">
+                                {hora_msg} · Tú
+                            </div>
                         </div>
                     </div>
                     """,
@@ -406,9 +407,10 @@ with tab1:
                     f"""
                     <div style="display:flex; justify-content:flex-start;">
                         <div class="msg-other">
-                        {texto_msg}
-                        <div class="msg-name">
-                            {hora_msg} · {usuario_msg}
+                            {texto_msg}
+                            <div class="msg-name">
+                                {hora_msg} · {usuario_msg}
+                            </div>
                         </div>
                     </div>
                     """,
