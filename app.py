@@ -452,7 +452,7 @@ with col1:
 
 with col2:
     st.button("➤")
-        "Escribe un mensaje...",
+    "Escribe un mensaje...",
     key="msg",
         on_change=send_msg,
         label_visibility="collapsed"
