@@ -81,14 +81,15 @@ st.set_page_config(
     color: white !important;
     padding: 14px 18px;
     border-radius: 22px;
-    max-width: 75%;
+    max-width: 280%;
     width: fit-content;
     display: inline-block;
 }
 
 .msg-row {
     display: flex;
-    margin: 4px 0;
+    margin: 2px 0;
+    width: 100%;
 }
 
 .msg-other {
