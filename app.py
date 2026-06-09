@@ -267,10 +267,10 @@ with tab1:
     
         mensajes_nuevos = max(
             0,
-         len(mensajes) - st.session_state.ultimo_total_mensajes
-    )
+            len(mensajes) - st.session_state.ultimo_total_mensajes
+        )
 
-            total_actual = len(mensajes)
+        total_actual = len(mensajes)
 
         if "last_count" not in st.session_state:
             st.session_state.last_count = total_actual
