@@ -23,8 +23,6 @@ if not firebase_admin._apps:
     )
 
     firebase_admin.initialize_app(cred)
-
-    firebase_admin.initialize_app(cred)
     
 st.markdown("""
 <style>
