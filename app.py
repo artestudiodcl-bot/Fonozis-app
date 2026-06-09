@@ -372,6 +372,7 @@ with tab1:
 
             usuario_msg = m["user_name"]
             texto_msg = m["message"]
+            hora_msg = m["created_at"][11:16]
 
             if usuario_msg == USUARIO:
 
@@ -380,7 +381,7 @@ with tab1:
                     <div class="msg-me">
                         {texto_msg}
                         <div class="msg-name">
-                            Tú
+                            {hora_msg} · Tú
                         </div>
                     </div>
                     """,
@@ -394,7 +395,7 @@ with tab1:
                     <div class="msg-other">
                         {texto_msg}
                         <div class="msg-name">
-                            {usuario_msg}
+                            {hora_msg} · {usuario_msg}
                         </div>
                     </div>
                     """,
