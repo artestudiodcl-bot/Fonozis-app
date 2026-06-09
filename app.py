@@ -7,30 +7,13 @@ from firebase_admin import credentials, messaging
 import json
 import requests
 import streamlit.components.v1 as components
-components.html("""
-<script>
-
-alert("JavaScript funcionando");
-
-if ("Notification" in window) {
-
+if ('Notification' in window) {
     alert("Notification API encontrada");
-
-    Notification.requestPermission()
-    .then(function(permission) {
-
-        alert("Permiso: " + permission);
-
-    });
-
 } else {
-
-    alert("Notification API NO disponible");
-
+    alert("Notification API NO encontrada");
 }
 
-</script>
-""", height=0)
+alert(navigator.userAgent);
 
 def save_push_token(token, usuario, banda):
     url = f"{BASE_URL}/rest/v1/push_tokens"
