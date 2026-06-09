@@ -189,15 +189,18 @@ USUARIO = st.session_state.user_name
 st.title(f"🎸 Jam | {BANDA}")
 st.caption(f"Usuario: {USUARIO}")
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    [
-        "💬 Muro",
-        "🎙 Ideas",
-        "🎧 Audios",
-        "📅 Fechas",
-        "🎵 Set List"
-    ]
-)
+titulo_muro = "💬 Muro"
+
+if mensajes_nuevos > 0:
+    titulo_muro = f"💬 Muro ({mensajes_nuevos})"
+
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    titulo_muro,
+    "🎙 Ideas",
+    "🎧 Audios",
+    "📅 Fechas",
+    "🎵 Set List"
+])
 
 # ======================================================
 # CHAT
