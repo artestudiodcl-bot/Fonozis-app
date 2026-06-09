@@ -25,7 +25,7 @@ with col2:
     st.image("IMG_2478.jpeg", width=60)
 
 with col3:
-    st.markdown(f"## {BANDA}")
+    st.markdown("## Jam")
 
 # Firebase
 if not firebase_admin._apps:
