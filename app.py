@@ -213,7 +213,7 @@ with tab1:
     # ==========================================
 
     st_autorefresh(
-        interval=2000
+        interval=2000,
         key="chat_refresh"
     )
 
