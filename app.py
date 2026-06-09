@@ -18,9 +18,14 @@ st.set_page_config(
 
 # Firebase
 if not firebase_admin._apps:
-    firebase_json = st.secrets["supabase"]["FIREBASE_SERVICE_ACCOUNT"]
 
-    st.write("Firebase encontrado")
+    firebase_json = json.loads(
+        st.secrets["supabase"]["FIREBASE_SERVICE_ACCOUNT"]
+    )
+
+    cred = credentials.Certificate(firebase_json)
+
+    firebase_admin.initialize_app(cred)
     
 st.markdown("""
 <style>
