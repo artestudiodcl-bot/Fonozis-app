@@ -11,7 +11,8 @@ import json
 # ======================================================
 
 st.set_page_config(
-     page_icon="🎸",
+    page_title="Jam",
+    page_icon="IMG_2478.jpeg",
     layout="centered"
 )
 
