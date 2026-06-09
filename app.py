@@ -109,12 +109,15 @@ st.set_page_config(
 
 .chat-input {
     position: fixed;
-    bottom: 15px;
-    left: 320px;
-    right: 30px;
+    bottom: 10px;
+    left: 260px;
+    right: 20px;
     z-index: 999;
-    background: #0E1117;
-    padding-top: 10px;
+
+    background: #F2F2F7;
+    border-radius: 25px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
 </style>
@@ -435,7 +438,9 @@ with tab1:
         '<div class="chat-input">',
         unsafe_allow_html=True
     )
-
+    
+    st.markdown("<div style='height:100px'></div>", unsafe_allow_html=True)
+    
     st.text_input(
         "Escribe un mensaje...",
     key="msg",
