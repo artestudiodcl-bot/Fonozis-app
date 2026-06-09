@@ -12,7 +12,8 @@ import json
 
 st.set_page_config(
     page_title="Jam",
-    page_icon="🎸",
+st.image("assets/IMG_2478.jpeg",width=180)
+st.title(f"{BANDA}")
     layout="centered"
 )
 
