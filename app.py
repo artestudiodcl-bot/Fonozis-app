@@ -24,9 +24,6 @@ with col1:
 with col2:
     st.image("IMG_2478.jpeg", width=70)
 
-with col3:
-    st.markdown("## fonozis")
-
 # Firebase
 if not firebase_admin._apps:
 
