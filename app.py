@@ -191,8 +191,8 @@ st.caption(f"Usuario: {USUARIO}")
 
 titulo_muro = "💬 Muro"
 
-# if mensajes_nuevos > 0:
-#     titulo_muro = f"💬 Muro ({mensajes_nuevos})"
+if mensajes_nuevos > 0:
+    st.info(f"🔔 Hay {mensajes_nuevos} mensajes nuevos")
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     titulo_muro,
