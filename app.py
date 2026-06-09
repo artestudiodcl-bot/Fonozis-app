@@ -210,8 +210,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 
 with tab1:
 
-    st.session_state.ultimo_total_mensajes = len(mensajes)
-
     # ==========================================
     # REFRESH AUTOMÁTICO
     # ==========================================
