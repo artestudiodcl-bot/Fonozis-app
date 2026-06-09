@@ -12,10 +12,13 @@ import json
 
 st.set_page_config(
     page_title="Jam",
-st.image("assets/IMG_2478.jpeg", width=180)
-st.title(f"{BANDA}")
+    page_icon="🎸",
     layout="centered"
 )
+
+st.image("IMG_2478.jpeg", width=180)
+
+st.title("Jam")
 
 # Firebase
 if not firebase_admin._apps:
