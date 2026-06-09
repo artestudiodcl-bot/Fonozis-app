@@ -97,7 +97,7 @@ st.set_page_config(
     color: white;
     padding: 12px 16px;
     border-radius: 20px;
-    max-width: 75%;
+    max-width: 280%;
     width: fit-content;
     display: inline-block;
 }
