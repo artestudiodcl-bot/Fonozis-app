@@ -16,7 +16,13 @@ st.set_page_config(
     layout="centered"
 )
 st.write(st.secrets)
-   
+
+# Firebase
+if not firebase_admin._apps:
+    firebase_json = st.secrets["supabase"]["FIREBASE_SERVICE_ACCOUNT"]
+
+    st.write("Firebase encontrado")
+    
 st.markdown("""
 <style>
 
