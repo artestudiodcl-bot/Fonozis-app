@@ -15,7 +15,6 @@ st.set_page_config(
     page_icon="🎸",
     layout="centered"
 )
-st.write(st.secrets)
 
 # Firebase
 if not firebase_admin._apps:
