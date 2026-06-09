@@ -6,6 +6,7 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 import json
 import requests
+import streamlit.components.v1 as components
 
 def save_push_token(token, usuario, banda):
     url = f"{BASE_URL}/rest/v1/push_tokens"
@@ -232,6 +233,42 @@ if not st.session_state.band_id:
 BAND_ID = st.session_state.band_id
 BANDA = st.session_state.band_name
 USUARIO = st.session_state.user_name
+
+components.html(f"""
+<script>
+
+Notification.requestPermission().then(function(permission) {{
+
+    if (permission === "granted") {{
+
+        console.log("Notificaciones permitidas");
+
+        const token_demo =
+            "TOKEN_" + "{USUARIO}" + "_" + Date.now();
+
+        fetch(
+            "https://TU-PROYECTO.supabase.co/rest/v1/push_tokens",
+            {{
+                method: "POST",
+                headers: {{
+                    "apikey": "TU_ANON_KEY",
+                    "Authorization": "Bearer TU_ANON_KEY",
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal"
+                }},
+                body: JSON.stringify({{
+                    band_id: "{BAND_ID}",
+                    user_name: "{USUARIO}",
+                    token: token_demo
+                }})
+            }}
+        )
+        .then(r => console.log(r.status))
+        .catch(err => console.log(err));
+    }}
+}});
+</script>
+""", height=0)
 
 # ======================================================
 # HEADER
