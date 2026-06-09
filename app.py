@@ -9,20 +9,6 @@ import requests
 import streamlit as st
 import streamlit.components.v1 as components
 
-js_code = """
-<script>
-if ('Notification' in window) {
-    alert("Notification API encontrada");
-} else {
-    alert("Notification API NO encontrada");
-}
-</script>
-"""
-
-components.html(js_code, height=100)
-
-alert(navigator.userAgent);
-
 def save_push_token(token, usuario, banda):
     url = f"{BASE_URL}/rest/v1/push_tokens"
     headers = {
