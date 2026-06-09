@@ -30,12 +30,6 @@ def save_push_token(token, usuario, banda):
 # CONFIG
 # ======================================================
 
-st.set_page_config(
-    page_title="Jam",
-    page_icon="IMG_2478.jpeg",
-    layout="centered"
-)
-
 # Firebase
 if not firebase_admin._apps:
 
@@ -65,6 +59,12 @@ st.markdown("""
 <style>
 
 st.warning("TEST PUSH")
+
+st.set_page_config(
+    page_title="Jam",
+    page_icon="IMG_2478.jpeg",
+    layout="centered"
+)
 
 .msg-me {
     background:#0A84FF;
