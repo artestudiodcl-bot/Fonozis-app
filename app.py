@@ -389,7 +389,8 @@ with tab1:
 
                 st.markdown(
                     f"""
-                    <div class="msg-me">
+                    <div style="display:flex; justify-content:flex-end;">
+                        <div class="msg-me">
                         {texto_msg}
                         <div class="msg-name">
                             {hora_msg} · Tú
