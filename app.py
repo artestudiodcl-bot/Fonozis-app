@@ -27,6 +27,37 @@ if not firebase_admin._apps:
 
     firebase_admin.initialize_app(cred)
     
+    st.markdown("""
+<script type="module">
+  import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBQX_NpjKiXrxVOuAvjs_w_MvwixQ_dP9w",
+    authDomain: "jam-97f48.firebaseapp.com",
+    projectId: "jam-97f48",
+    storageBucket: "jam-97f48.firebasestorage.app.appspot.com",
+    messagingSenderId: "1083343441316",
+    appId: "1:1083343441316:web:59a18d1ab0cc487099c531",
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      getToken(messaging, { vapidKey: "TU_WEB_PUSH_KEY" }).then((currentToken) => {
+        if (currentToken) {
+          fetch("/save_token", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({token: currentToken, usuario: '""" + st.session_state.usuario + """', banda: '""" + BANDA + """'})
+          });
+        }
+      });
+    }
+  });
+</script>
+""", unsafe_allow_html=True)
 st.markdown("""
 <style>
 
