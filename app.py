@@ -11,21 +11,12 @@ import json
 # ======================================================
 
 st.set_page_config(
-    page_title="Jam",
-    page_icon="🎸",
+     page_icon="🎸",
     layout="centered"
 )
 
-col1, col2, col3 = st.columns([1,1,3])
-
-with col1:
-    st.markdown("## 🎸")
-
-with col2:
-    st.image("IMG_2478.jpeg", width=60)
-
-with col3:
-    st.markdown("## Jam")
+st.image("IMG_2478.jpeg", width=180)
+st.title(BANDA)
 
 # Firebase
 if not firebase_admin._apps:
