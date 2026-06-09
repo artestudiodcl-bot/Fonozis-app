@@ -297,7 +297,7 @@ with tab1:
         if mensajes_nuevos > 0:
             st.info(f"🔔 Hay {mensajes_nuevos} mensajes nuevos")
             st.subheader("💬 Muro")
-            st.error("PRUEBA")
+        
         for m in mensajes:
 
             usuario_msg = m["user_name"]
