@@ -8,12 +8,29 @@ import json
 import requests
 import streamlit.components.v1 as components
 components.html("""
-<h1>TEST HTML</h1>
 <script>
-document.body.style.background='red';
-alert('FUNCIONA');
+
+alert("JavaScript funcionando");
+
+if ("Notification" in window) {
+
+    alert("Notification API encontrada");
+
+    Notification.requestPermission()
+    .then(function(permission) {
+
+        alert("Permiso: " + permission);
+
+    });
+
+} else {
+
+    alert("Notification API NO disponible");
+
+}
+
 </script>
-""", height=200)
+""", height=0)
 
 def save_push_token(token, usuario, banda):
     url = f"{BASE_URL}/rest/v1/push_tokens"
