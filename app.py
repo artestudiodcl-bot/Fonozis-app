@@ -51,9 +51,9 @@ if not firebase_admin._apps:
 
    Notification.requestPermission().then(function(permission){
 
-    if(permission === "granted"){
+       if(permission === "granted"){
         alert("Push permitido");
-    }
+       }
 
    });
 
