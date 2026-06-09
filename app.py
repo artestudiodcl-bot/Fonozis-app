@@ -371,15 +371,16 @@ with tab1:
             st.info(f"🔔 Hay {mensajes_nuevos} mensajes nuevos")
             st.subheader("💬 Muro")
             
-                st.markdown("""
-                <div class="chat-container">
-                """, unsafe_allow_html=True)
+            st.markdown("""
+            <div class="chat-container">
+            """, unsafe_allow_html=True)
         
         for m in mensajes:
         
-                st.markdown("""
-                </div>
-                """, unsafe_allow_html=True)
+            st.markdown("""
+            </div>
+            """, unsafe_allow_html=True)
+            
             usuario_msg = m["user_name"]
             texto_msg = m["message"]
             hora_msg = m["created_at"][11:16]
