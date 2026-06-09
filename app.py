@@ -26,8 +26,6 @@ if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_json)
 
     firebase_admin.initialize_app(cred)
-
-st.success("✅ Firebase conectado")
     
 st.markdown("""
 <style>
@@ -215,7 +213,7 @@ with tab1:
     # ==========================================
 
     st_autorefresh(
-        interval=3000,
+        interval=2000
         key="chat_refresh"
     )
 
