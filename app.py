@@ -16,7 +16,16 @@ st.set_page_config(
     layout="centered"
 )
 
-st.image("IMG_2478.jpeg", width=180)
+col1, col2, col3 = st.columns([1,1,4])
+
+with col1:
+    st.markdown("## 🎸")
+
+with col2:
+    st.image("IMG_2478.jpeg", width=70)
+
+with col3:
+    st.markdown(f"# 🎸 | {BANDA}")
 
 # Firebase
 if not firebase_admin._apps:
