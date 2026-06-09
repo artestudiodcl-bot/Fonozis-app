@@ -18,7 +18,6 @@ st.set_page_config(
 
 # Firebase
 if not firebase_admin._apps:
-    if not firebase_admin._apps:
     cred = credentials.Certificate(
         dict(st.secrets["FIREBASE_SERVICE_ACCOUNT"])
     )
