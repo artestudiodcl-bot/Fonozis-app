@@ -43,6 +43,8 @@ document.getElementById("btn").onclick = async () => {
     return;
   }
 
+  try {
+
   const token = await getToken(
     messaging,
     {
@@ -51,8 +53,17 @@ document.getElementById("btn").onclick = async () => {
     }
   );
 
-  document.getElementById("resultado")
-    .textContent = token;
+  document.getElementById("resultado").textContent =
+    "TOKEN:\n\n" + token;
+
+} catch(err) {
+
+  document.getElementById("resultado").textContent =
+    "ERROR:\n\n" + err;
+
+  console.error(err);
+
+}
 };
 
 </script>
