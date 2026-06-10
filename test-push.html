@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Jam Push Test</title>
+  <meta charset="UTF-8">
+  <title>Jam Push Test</title>
 </head>
 <body>
 
 <h1>Jam Push Test</h1>
+
 <button id="btn">Obtener Token</button>
+
 <pre id="resultado"></pre>
 
 <script type="module">
@@ -28,25 +30,28 @@ const messaging = getMessaging(app);
 
 document.getElementById("btn").onclick = async () => {
   const permission = await Notification.requestPermission();
+
   if(permission !== "granted") {
     alert("Permiso denegado");
     return;
   }
 
   try {
-    // Registra el Service Worker en la raíz
-    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const registration = await navigator.serviceWorker.register(
+      '/Fonozis-app/firebase-messaging-sw.js' // ⚠ ruta completa relativa a tu repo
+    );
 
-    // Obtén el token de FCM usando tu VAPID Key
     const token = await getToken(messaging, {
       vapidKey: "BIf6mLIG9E8tPHwrGT9hd7IBaavu1dUv6G7KxkB7DajkAy4Gd9mve0rqZNt0fnzgmZuko67DJXMJJJnoj47qR7g",
       serviceWorkerRegistration: registration
     });
 
-    document.getElementById("resultado").innerHTML = "<b>TOKEN:</b><br>" + token;
+    document.getElementById("resultado").innerHTML =
+      "<b>TOKEN:</b><br>" + token;
 
   } catch(error) {
-    document.getElementById("resultado").innerHTML = "ERROR:<br><br>" + error;
+    document.getElementById("resultado").innerHTML =
+      "ERROR:<br><br>" + error;
   }
 };
 </script>
