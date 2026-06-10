@@ -10,6 +10,22 @@
 <button id="btn">Pedir permiso</button>
 
 <div id="resultado"></div>
+    
+<script>
+document.getElementById("btn").onclick = async () => {
 
+    if (!("Notification" in window)) {
+        document.getElementById("resultado").innerHTML =
+        "Notification API NO disponible";
+        return;
+    }
+
+    const permiso = await Notification.requestPermission();
+
+    document.getElementById("resultado").innerHTML =
+    "Permiso: " + permiso;
+
+};
+</script>
 </body>
 </html>
