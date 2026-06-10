@@ -1,32 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Jam Push Test</title>
-</head>
-<body>
-
-<h1>Jam Push Test</h1>
-
-<button id="btn">Pedir permiso</button>
-
-<div id="resultado"></div>
-
 <script>
 document.getElementById("btn").onclick = async () => {
 
-    if (!("Notification" in window)) {
-        document.getElementById("resultado").innerHTML =
-        "Notification API NO disponible";
-        return;
-    }
+    let info = "";
 
-    const permiso = await Notification.requestPermission();
+    info += "Notification: " + ("Notification" in window) + "<br>";
+    info += "ServiceWorker: " + ("serviceWorker" in navigator) + "<br>";
+    info += "PushManager: " + ("PushManager" in window) + "<br>";
 
-    document.getElementById("resultado").innerHTML =
-    "Permiso: " + permiso;
+    document.getElementById("resultado").innerHTML = info;
 
 };
 </script>
-
-</body>
-</html>
