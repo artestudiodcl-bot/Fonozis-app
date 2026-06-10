@@ -2,14 +2,13 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Jam - Test Notifications</title>
+  <title>Jam - Prueba Notificaciones</title>
 </head>
 <body>
-  <h1>Prueba de Notificaciones</h1>
+  <h1>Jam - Prueba de Notificaciones</h1>
   <button id="btnToken">Obtener Token</button>
 
   <script type="module">
-    // Firebase Web SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging.js";
 
@@ -33,7 +32,7 @@
             vapidKey: "BIf6mLIG9E8tPHwrGT9hd7IBaavu1dUv6G7KxkB7DajkAy4Gd9mve0rqZNt0fnzgmZuko67DJXMJJJnoj47qR7g"
           });
           console.log("Token obtenido:", currentToken);
-          alert("Token obtenido! Revisa la consola.");
+          alert("Token obtenido! Revisa la consola del navegador.");
         } else {
           alert("Permiso de notificaciones denegado");
         }
