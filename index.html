@@ -1,13 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Jam Test</h1>
+
+<button onclick="probar()">Probar</button>
+
+<div id="resultado"></div>
+
 <script>
-document.getElementById("btn").onclick = async () => {
+function probar() {
 
-    let info = "";
+    document.getElementById("resultado").innerHTML =
+    "Notification: " + ("Notification" in window) +
+    "<br>ServiceWorker: " + ("serviceWorker" in navigator) +
+    "<br>PushManager: " + ("PushManager" in window);
 
-    info += "Notification: " + ("Notification" in window) + "<br>";
-    info += "ServiceWorker: " + ("serviceWorker" in navigator) + "<br>";
-    info += "PushManager: " + ("PushManager" in window) + "<br>";
-
-    document.getElementById("resultado").innerHTML = info;
-
-};
+}
 </script>
+
+</body>
+</html>
