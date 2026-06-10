@@ -1,23 +1,52 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <title>Jam - Test Notifications</title>
+</head>
 <body>
+  <h1>Prueba de Notificaciones</h1>
+  <button id="btnToken">Obtener Token</button>
 
-<h1>Jam Test</h1>
+  <script type="module">
+    // Firebase Web SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging.js";
 
-<button onclick="probar()">Probar</button>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQX_NpjKiXrxVOuAvjs_w_MvwixQ_dP9w",
+      authDomain: "jam-97f48.firebaseapp.com",
+      projectId: "jam-97f48",
+      storageBucket: "jam-97f48.firebasestorage.app",
+      messagingSenderId: "1083343441316",
+      appId: "1:1083343441316:web:59a18d1ab0cc487099c531"
+    };
 
-<div id="resultado"></div>
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
 
-<script>
-function probar() {
+    document.getElementById('btnToken').addEventListener('click', async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          const currentToken = await getToken(messaging, {
+            vapidKey: "BIf6mLIG9E8tPHwrGT9hd7IBaavu1dUv6G7KxkB7DajkAy4Gd9mve0rqZNt0fnzgmZuko67DJXMJJJnoj47qR7g"
+          });
+          console.log("Token obtenido:", currentToken);
+          alert("Token obtenido! Revisa la consola.");
+        } else {
+          alert("Permiso de notificaciones denegado");
+        }
+      } catch (err) {
+        console.error("Error obteniendo token: ", err);
+      }
+    });
 
-    document.getElementById("resultado").innerHTML =
-    "Notification: " + ("Notification" in window) +
-    "<br>ServiceWorker: " + ("serviceWorker" in navigator) +
-    "<br>PushManager: " + ("PushManager" in window);
-
-}
-</script>
-
+    // Mensajes en primer plano
+    onMessage(messaging, (payload) => {
+      console.log('Mensaje recibido en primer plano: ', payload);
+      alert(`Mensaje: ${payload.notification.title} - ${payload.notification.body}`);
+    });
+  </script>
 </body>
 </html>
