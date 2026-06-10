@@ -1,31 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Jam Push Test</title>
+<meta charset="UTF-8">
+<title>Jam Push Test</title>
 </head>
 <body>
 
 <h1>Jam Push Test</h1>
 
-<button id="btn">Pedir permiso</button>
+<button id="btn">Obtener Token</button>
 
-<div id="resultado"></div>
-    
-<script>
+<pre id="resultado"></pre>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getMessaging,
+  getToken
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBQX_NpjKiXrxVOuAvjs_w_MvwixQ_dP9w",
+  authDomain: "jam-97f48.firebaseapp.com",
+  projectId: "jam-97f48",
+  storageBucket: "jam-97f48.firebasestorage.app",
+  messagingSenderId: "1083343441316",
+  appId: "1:1083343441316:web:59a18d1ab0cc487099c531"
+};
+
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
+
 document.getElementById("btn").onclick = async () => {
 
-    if (!("Notification" in window)) {
-        document.getElementById("resultado").innerHTML =
-        "Notification API NO disponible";
-        return;
+  const permission =
+    await Notification.requestPermission();
+
+  if(permission !== "granted"){
+    alert("Permiso denegado");
+    return;
+  }
+
+  const token = await getToken(
+    messaging,
+    {
+      vapidKey:
+      "BIf6mLIG9E8tPHwrGT9hd7IBaavu1dUv6G7KxkB7DajkAy4Gd9mve0rqZNt0fnzgmZuko67DJXMJJJnoj47qR7g"
     }
+  );
 
-    const permiso = await Notification.requestPermission();
-
-    document.getElementById("resultado").innerHTML =
-    "Permiso: " + permiso;
-
+  document.getElementById("resultado")
+    .textContent = token;
 };
+
 </script>
+
 </body>
 </html>
