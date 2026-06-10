@@ -45,24 +45,20 @@ document.getElementById("btn").onclick = async () => {
 
   try {
 
-  const token = await getToken(
-    messaging,
-    {
-      vapidKey:
-      "BIf6mLIG9E8tPHwrGT9hd7IBaavu1dUv6G7KxkB7DajkAy4Gd9mve0rqZNt0fnzgmZuko67DJXMJJJnoj47qR7g"
-    }
-  );
+  const registration = await navigator.serviceWorker.register(
+  "./firebase-messaging-sw.js"
+);
 
-  document.getElementById("resultado").textContent =
-    "TOKEN:\n\n" + token;
+const token = await getToken(
+  messaging,
+  {
+    vapidKey: "BIf6mLIG9E8tPHwrGT9hd7IBaavu1dUv6G7KxkB7DajkAy4Gd9mve0rqZNt0fnzgmZuko67DJXMJJJnoj47qR7g",
+    serviceWorkerRegistration: registration
+  }
+);
 
-} catch(err) {
-
-  document.getElementById("resultado").textContent =
-    "ERROR:\n\n" + err;
-
-  console.error(err);
-
+document.getElementById("resultado").innerHTML =
+  "<b>TOKEN:</b><br>" + token;
 }
 };
 
