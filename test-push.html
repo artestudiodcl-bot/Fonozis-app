@@ -60,8 +60,11 @@ const token = await getToken(
 document.getElementById("resultado").innerHTML =
   "<b>TOKEN:</b><br>" + token;
 }
-};
-
+catch(error) {
+  document.getElementById("resultado").innerHTML =
+    "ERROR:<br><br>" + error;
+}
+  
 </script>
 
 </body>
